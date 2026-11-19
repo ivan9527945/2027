@@ -173,6 +173,10 @@ export default function createCoverChapter(chapterContext, plan) {
       gl.setRenderTarget(null);
     },
     elements: [],
+    /** 引擎卸載這一章時呼叫（lazy 模式、手機）：釋放烘封面用的渲染目標 */
+    dispose() {
+      worldTarget.dispose();
+    },
     update(progress, frame) {
       const p = clamp(progress, -0.3, 1.3);
       computer.tick(frame.time * 1000);

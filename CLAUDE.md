@@ -41,6 +41,7 @@ npm run build:captions   # 改了章節旁白之後要重跑，重新產生 data
 - `engine/pace.ts` 定義節奏範本（節拍時間點），章節檔頂端的註解會寫出每個節拍對應的畫面與音效，修改時保持註解同步。
 - `engine/shared/world/` 是 canvas 2D 繪圖元件庫，座標單位是封面像素（原圖 1110×1475），顏色只用 `space.ts` 的 `RED`、`DARK_RED`、`BLACK`、`WHITE`；細節見該資料夾的 README（其中提到的 `.js`、`/kit.html` 是原專案的東西）。`shared/set/` 是 3D 場景的建模工具，`shared/desk/` 是書桌場景。
 - 預熱分兩段（`main.ts` 的 `prewarm`／`ensurePrewarmed`）；各階段耗時在 `window.__loadTimes`。`?share=<mode>` 是分享圖／影片的拍攝模式。
+- 章節是 lazy 建構的（`main.ts` 的 `buildChapter`／`manageChapters`）：開場只建起點附近的章，其他章在空閒時建；手機（`deviceTier.lowMemory`）只保留目前章附近的章，遠的整章卸載、GPU 資源只讓附近常駐（`updateResidency`），捲回來重建——所以章節的 `build()` 必須可重複執行、結果一致（用固定種子的亂數）。終章的封面由 `bakeWorldLazily` 另外逐章建平面版來烘。`?flat`、`?only`、`?placeholders`、分享模式仍一次全建。
 
 **旁白的資料流**：旁白寫在 `engine/chapters/*.ts` 的 `captions: pacedCaptions("<名稱>", [ ... ])` 字串陣列裡；`scripts/extract-captions.ts` 用正規表達式把它抽到 `data/captions.json` 供伺服器端頁面使用。改寫旁白時保持這個字面格式（純字串陣列），否則抽不到。
 

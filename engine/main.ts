@@ -331,10 +331,58 @@ const chapterContext = {
 let chapters = [];
 let chapterStarts = [];
 let totalDuration = 0;
+// 章節的空殼：還沒建場景時就知道的東西（順序、長度、轉場）。建好之後場景等欄位直接加在同一個物件上，
+// 卸載時再刪掉，所以 chapters 陣列裡的物件身分不變。
+const STUB_KEYS = new Set(["id", "title", "duration", "enter", "plan", "built", "building", "elements"]);
+function chapterStub(plan) {
+  return { id: plan.id, title: plan.title, duration: PACE[plan.pace].duration, enter: PACE[plan.pace].enter ?? undefined, plan, built: false, elements: [] } as any;
+}
+/** 建出一章的場景（2D 平面版＋專屬 3D 場景），回傳章節物件；失敗時回傳佔位場景 */
+async function createChapter(plan) {
+  const load = chapterModules[`./chapters/${plan.id}.js`];
+  if (!load) return placeholderChapter(plan);
+  try {
+    const module = await load();
+    const loadSet = setModules[`./sets/${plan.id}.js`];
+    if (loadSet && !query.has("flat")) {
+      const flat = createRegistry(plan.id);
+      const built = module.build(flat.register);
+      // 第三個參數把平面版交給 3D 場景：紙偶和貼圖直接沿用已經畫好的圖，不重畫
+      const chapter = await (await loadSet()).default(chapterContext, plan, {
+        parts: built.parts,
+        object: (id) => flat.entries.find((entry) => entry.id === id)?.object,
+      });
+      chapter.set3d = true;
+      chapter.group = built.group; // 平面版：給終章和共用世界用，不放進這一章自己的場景
+      chapter.flatElements = flat.entries;
+      return chapter;
+    }
+    return await module.default(chapterContext, plan);
+  } catch (error) {
+    console.error(`[world-ahead] chapter "${plan.id}" failed`, error);
+    return placeholderChapter(plan);
+  }
+}
+function finishChapter(stub, chapter) {
+  Object.assign(stub, chapter);
+  const plan = stub.plan;
+  stub.id = plan.id;
+  stub.title = plan.title;
+  // 長度與進場轉場一律照節奏範本（pace.js），章節自己不能改
+  stub.duration = PACE[plan.pace].duration;
+  stub.enter = PACE[plan.pace].enter ?? undefined;
+  stub.elements ??= [];
+  stub.built = true;
+  return stub;
+}
+const loadMark = (k: string) => (((window as any).__loadTimes ??= {})[k] = Math.round(performance.now() - LOAD_T0));
+const LOAD_T0 = performance.now();
+// lazy 模式（預設）：章節捲到附近才建（見下方 buildChapter／manageChapters）。
+// ?flat（每一章都立在共用世界裡，需要全部的平面版）、?only、?placeholders、分享拍攝模式維持一次全建。
+let lazyMode = false;
 async function loadChapters() {
   // 載入各階段的時間（毫秒），除錯用：window.__loadTimes
-  const T0 = performance.now();
-  const mark = (k: string) => (((window as any).__loadTimes ??= {})[k] = Math.round(performance.now() - T0));
+  const mark = loadMark;
   await document.fonts.ready.catch(() => {});
   mark('fonts');
   // 還沒畫的章預設直接跳過，讓已完成的章連續播放；網址加 ?placeholders 才顯示佔位場景。
@@ -344,51 +392,33 @@ async function loadChapters() {
   const plans = chapterPlan.filter(
     (plan) => (showPlaceholders || chapterModules[`./chapters/${plan.id}.js`]) && (!only || only.includes(plan.id)),
   );
-  chapters = await Promise.all(
-    plans.map(async (plan) => {
-      const load = chapterModules[`./chapters/${plan.id}.js`];
-      let chapter;
-      if (!load) {
-        chapter = placeholderChapter(plan);
-      } else {
-        try {
-          const module = await load();
-          const loadSet = setModules[`./sets/${plan.id}.js`];
-          if (loadSet && !query.has("flat")) {
-            const flat = createRegistry(plan.id);
-            const built = module.build(flat.register);
-            // 第三個參數把平面版交給 3D 場景：紙偶和貼圖直接沿用已經畫好的圖，不重畫
-            chapter = await (await loadSet()).default(chapterContext, plan, {
-              parts: built.parts,
-              object: (id) => flat.entries.find((entry) => entry.id === id)?.object,
-            });
-            chapter.set3d = true;
-            chapter.group = built.group; // 平面版：給終章和共用世界用，不放進這一章自己的場景
-            chapter.flatElements = flat.entries;
-          } else {
-            chapter = await module.default(chapterContext, plan);
-          }
-        } catch (error) {
-          console.error(`[world-ahead] chapter "${plan.id}" failed`, error);
-          chapter = placeholderChapter(plan);
-        }
-      }
-      chapter.id = plan.id;
-      chapter.title = plan.title;
-      // 長度與進場轉場一律照節奏範本（pace.js），章節自己不能改
-      chapter.duration = PACE[plan.pace].duration;
-      chapter.enter = PACE[plan.pace].enter ?? undefined;
-      chapter.elements ??= [];
-      mark('built:' + plan.id);
-      return chapter;
-    }),
-  );
+  lazyMode = !showPlaceholders && !only && !query.has("flat") && !shareMode;
+  chapters = plans.map(chapterStub);
   chapterStarts = [];
   totalDuration = 0;
   for (const chapter of chapters) {
     chapterStarts.push(totalDuration);
     totalDuration += chapter.duration;
   }
+  if (lazyMode) {
+    // 只先建開場會看到的章（和 prewarm 第一段同一組），其他章交給 manageChapters
+    const first = firstChapters();
+    await Promise.all([...first].map((k) => buildChapter(k)));
+    mark('firstBuilt');
+    buildCaptionList();
+    resize();
+    for (const k of first) prewarmChapter(chapters[k]);
+    mark('prewarm:first');
+    mark('prewarm');
+    manageChapters();
+    return;
+  }
+  await Promise.all(
+    chapters.map(async (stub) => {
+      finishChapter(stub, await createChapter(stub.plan));
+      mark('built:' + stub.id);
+    }),
+  );
   mark('allBuilt');
   buildCaptionList();
   setupWorld();
@@ -396,6 +426,147 @@ async function loadChapters() {
   mark('world');
   prewarm(mark);
   mark('prewarm');
+}
+/** 開場要先準備好的章：起點（序章或 ?ch= 指定的章）、前後各一章、起點的 portal */
+function firstChapters() {
+  const first = new Set<number>();
+  const start = pinned ? Math.max(0, chapters.findIndex((c) => c.id === pinned.id)) : 0;
+  for (const k of [start - 1, start, start + 1]) if (chapters[k]) first.add(k);
+  const portals = { prologue: ["stage"] }; // 還沒建好的章不知道自己的 portal；目前只有序章在開場就需要
+  for (const id of chapters[start]?.portals ?? portals[chapters[start]?.id] ?? []) {
+    const k = chapters.findIndex((x) => x.id === id);
+    if (k >= 0) first.add(k);
+  }
+  return first;
+}
+
+// ---- lazy 建構（2026-11-19 使用者要求「各章的 build() 改成捲到附近才建立」） ----
+// 每一章建好的場景（canvas 畫的貼圖、幾何、3D 模型）都很佔記憶體，一次全建在手機上會超過 iOS Safari 的上限。
+// - 開場只建 firstChapters()；其他章在瀏覽器空閒時一章一章建（一次一章，不擋畫面）。
+// - 桌機：最後全部建好，之後不卸載（和原本一樣）。
+// - 記憶體吃緊的裝置（deviceTier.lowMemory）：只建正在看的章的前一章到後兩章；超出前兩章到後三章的整章卸載
+//   （GPU 資源釋放、物件交給 GC），捲回來時重建。章節都用固定種子的亂數，重建出來和原本一樣。
+// - 捲得比建構快、畫到還沒建好的章：那一章立刻建（不等空閒），建好之前畫面是底色。
+const idleCall = (fn) => ("requestIdleCallback" in window ? window.requestIdleCallback(fn, { timeout: 300 }) : setTimeout(fn, 50));
+const nextIdle = () => new Promise((resolve) => idleCall(resolve));
+function buildChapter(k) {
+  const stub = chapters[k];
+  if (!stub) return Promise.resolve();
+  if (stub.built) return Promise.resolve(stub);
+  stub.building ??= createChapter(stub.plan).then((chapter) => {
+    stub.building = null;
+    finishChapter(stub, chapter);
+    loadMark('built:' + stub.id);
+    buildCaptionList();
+    residentKey = "";
+    if (stub.bakeWorld) void bakeWorldLazily(stub);
+    return stub;
+  });
+  return stub.building;
+}
+/** 依目前看的章決定要建／要卸載哪些章（手機才卸載） */
+function chapterWindow(pad: number, ahead: number) {
+  const lo = Math.min(...residentIndices), hi = Math.max(...residentIndices);
+  const want = new Set<number>();
+  for (let k = lo - pad; k <= hi + ahead; k++) if (chapters[k]) want.add(k);
+  for (const k of [...want]) {
+    for (const id of chapters[k].portals ?? []) {
+      const j = chapters.findIndex((c) => c.id === id);
+      if (j >= 0) want.add(j);
+    }
+  }
+  return want;
+}
+let pumping = false;
+function manageChapters() {
+  if (!lazyMode || !chapters.length) return;
+  if (deviceTier.lowMemory) {
+    const keep = chapterWindow(2, 3);
+    chapters.forEach((chapter, k) => {
+      if (chapter.built && !keep.has(k)) unloadChapter(k);
+    });
+  }
+  if (pumping) return;
+  pumping = true;
+  // 一次建一章、預熱，空閒時再挑下一章：先建正在看的章，再往後、最後往前
+  const step = async () => {
+    const want = deviceTier.lowMemory ? chapterWindow(1, 2) : new Set(chapters.map((_, k) => k));
+    const cur = Math.min(...residentIndices);
+    const todo = [...want].filter((k) => !chapters[k].built).sort((a, b) => (a >= cur ? a - cur : (cur - a) * 1.5) - (b >= cur ? b - cur : (cur - b) * 1.5));
+    if (!todo.length) {
+      pumping = false;
+      if (chapters.every((c) => c.built) && !(window as any).__loadTimes?.['prewarm:all']) loadMark('prewarm:all');
+      return;
+    }
+    const k = todo[0];
+    await buildChapter(k);
+    if (chapters[k].built && !chapters[k].prewarmed) prewarmChapter(chapters[k]);
+    // 預熱完如果不在常駐視窗裡，GPU 資源馬上釋放
+    residentKey = "";
+    updateResidency(residentIndices);
+    idleCall(step);
+  };
+  idleCall(step);
+}
+/** 卸載一章：GPU 資源（其他已建好的章沒在用的）釋放，場景等欄位刪掉，只留空殼 */
+function unloadChapter(k) {
+  const chapter = chapters[k];
+  if (!chapter?.built) return;
+  const others: Resources = { textures: new Set(), geometries: new Set() };
+  chapters.forEach((other, j) => {
+    if (j !== k && other.built) collectResources(other.scene, others);
+  });
+  const mine = collectResources(chapter.scene, { textures: new Set(), geometries: new Set() });
+  for (const texture of mine.textures) if (!others.textures.has(texture) && !(texture as any).isRenderTargetTexture) texture.dispose();
+  for (const geometry of mine.geometries) if (!others.geometries.has(geometry)) geometry.dispose();
+  chapter.shadowLight?.shadow.map?.dispose();
+  chapter.dispose?.(); // 章節自己的渲染目標等（終章烘封面用的）
+  for (const key of Object.keys(chapter)) if (!STUB_KEYS.has(key)) delete chapter[key];
+  chapter.built = false;
+  chapter.elements = [];
+  cameraFollow.delete(k);
+  residentKey = "";
+  buildCaptionList();
+}
+/**
+ * 終章：螢幕上的整張封面要從每一章的平面版烘出來。lazy 模式下別章多半沒建，
+ * 所以另外逐章建一份平面版（空閒時一章一章來），全部到齊後烘一次，然後丟掉。
+ */
+async function bakeWorldLazily(chapter) {
+  const flats = [];
+  const release = () => {
+    const used: Resources = { textures: new Set(), geometries: new Set() };
+    for (const other of chapters) if (other.built) collectResources(other.scene, used);
+    for (const flat of flats) {
+      flat.group.removeFromParent();
+      const mine = collectResources(flat.group, { textures: new Set(), geometries: new Set() });
+      for (const texture of mine.textures) if (!used.textures.has(texture) && !(texture as any).isRenderTargetTexture) texture.dispose();
+      for (const geometry of mine.geometries) if (!used.geometries.has(geometry)) geometry.dispose();
+    }
+  };
+  for (const plan of chapterPlan) {
+    const load = chapterModules[`./chapters/${plan.id}.js`];
+    if (plan.id === chapter.id || !load) continue;
+    await nextIdle();
+    if (!chapter.built) return release(); // 等待期間終章被卸載了
+    try {
+      const module = await load();
+      if (!module.build) continue;
+      const registry = createRegistry(plan.id);
+      const built = module.build(registry.register);
+      flats.push({ id: plan.id, group: built.group, flatElements: registry.entries });
+    } catch (error) {
+      console.error(`[world-ahead] flat "${plan.id}" failed`, error);
+    }
+  }
+  if (!chapter.built) return release();
+  setupStaging(flats); // 圖層順序（地景先畫）和一次全建時一樣
+  for (const flat of flats) chapter.worldScene.add(flat.group);
+  applyStand(0, null);
+  chapter.bakeWorld(renderer);
+  setupStaging([]); // 立體化的登記只有烘焙用得到，清掉才不會留住這些物件
+  release();
+  loadMark('baked');
 }
 
 // 預熱：載入時先把每一章的 shader 編譯好、貼圖上傳到 GPU。
@@ -517,7 +688,8 @@ function prewarmChapter(chapter) {
   });
   renderer.compile(chapter.scene, chapter.camera);
   for (const texture of textures) renderer.initTexture(texture);
-  if (chapter.bakeWorld) {
+  if (chapter.bakeWorld && !lazyMode) {
+    // lazy 模式改由 bakeWorldLazily 烘（那時別章多半還沒建）
     // 終章把整張封面（每一章的平面版元素）烘成一張貼圖，之後不用每一幀畫上千個物件
     for (const other of worldGroups) {
       restore(other.rest);
@@ -613,11 +785,11 @@ function updateResidency(indices: number[]) {
   const worldRoots = new Set(worldGroups.map((w) => w.group));
   const worldNeeded = [...keep].some((k) => isStaged(chapters[k]));
   const kept: Resources = { textures: new Set(), geometries: new Set() };
-  for (const k of keep) collectResources(chapters[k].scene, kept, worldNeeded ? undefined : worldRoots);
+  for (const k of keep) if (chapters[k].built) collectResources(chapters[k].scene, kept, worldNeeded ? undefined : worldRoots);
   if (worldNeeded) for (const root of worldRoots) collectResources(root, kept);
   const far: Resources = { textures: new Set(), geometries: new Set() };
   chapters.forEach((chapter, k) => {
-    if (keep.has(k) || !chapter.prewarmed) return;
+    if (keep.has(k) || !chapter.built || !chapter.prewarmed) return;
     collectResources(chapter.scene, far, worldRoots);
     if (chapter.shadowLight?.shadow.map) {
       chapter.shadowLight.shadow.map.dispose();
@@ -637,6 +809,7 @@ function updateResidency(indices: number[]) {
   if (reload) for (const texture of kept.textures) if (!(texture as any).isRenderTargetTexture) renderer.initTexture(texture);
 }
 let residentIndices = [0];
+let lastWindowKey = "";
 const captionList = [];
 function buildCaptionList() {
   captionList.length = 0;
@@ -1149,6 +1322,18 @@ function renderChapter(index) {
   if (renderedThisFrame.has(index)) {
     return renderedThisFrame.get(index);
   }
+  if (!chapters[index].built) {
+    // 還沒建好（捲得比背景建構快）：立刻建，建好之前這一章畫成底色
+    void buildChapter(index).then(() => {
+      if (chapters[index].built && !chapters[index].prewarmed) prewarmChapter(chapters[index]);
+    });
+    const blank = getRenderTarget(renderTargetCursor++);
+    renderer.setRenderTarget(blank);
+    renderer.clear();
+    renderer.setRenderTarget(null);
+    renderedThisFrame.set(index, blank);
+    return blank;
+  }
   ensurePrewarmed(index);
   const chapter = chapters[index];
   for (const r of chapter.portals ?? []) {
@@ -1226,6 +1411,11 @@ function tick() {
   renderTargetCursor = 0;
   const [fromIndex, toIndex, mix, kind] = currentTransition();
   residentIndices = fromIndex === toIndex ? [fromIndex] : [fromIndex, toIndex];
+  const windowKey = residentIndices.join(",");
+  if (windowKey !== lastWindowKey) {
+    lastWindowKey = windowKey;
+    manageChapters(); // 換章了：建附近的章、（手機）卸載遠的章
+  }
   updateResidency(residentIndices);
   const fromTarget = renderChapter(fromIndex);
   const toTarget = mix > 0 ? renderChapter(toIndex) : fromTarget;
@@ -1351,7 +1541,7 @@ window.__wa = {
   },
   /** 某個元素編號在哪一章（終章以外） */
   chapterOf(elementId) {
-    return chapters.find((chapter) => chapter.id !== "cover" && chapter.elements.some((entry) => entry.id === elementId))?.id ?? null;
+    return chapters.find((chapter) => chapter.id !== "cover" && (chapter.plan?.elements.includes(elementId) || chapter.elements.some((entry) => entry.id === elementId)))?.id ?? null;
   },
   get current() {
     const [fromIndex, toIndex, mix] = currentTransition();
@@ -1360,6 +1550,7 @@ window.__wa = {
   /** 量測用：某一章在 progress 時的鏡頭位置、注視點、fov（會呼叫該章的 update） */
   cameraAt(id, progress) {
     const chapter = chapters.find((c) => c.id === id);
+    if (!chapter?.built) return null; // lazy 模式下還沒建好的章
     chapter.camera.aspect = frame.aspect || innerWidth / innerHeight;
     chapter.update(progress, frame);
     const c = chapter.camera, f = c.userData.focus;
