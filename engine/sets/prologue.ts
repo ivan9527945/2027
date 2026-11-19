@@ -233,7 +233,7 @@ function reachTo(figure, side, target) {
   return best;
 }
 
-export default function createPrologueSet(chapterContext, plan, flat) {
+export default async function createPrologueSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(BLACK);
   const camera = new PerspectiveCamera(38, 1, 0.03, 500);
@@ -275,6 +275,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
   }
   scene.add(bushes);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #98 星星：封面上的五顆四芒星是立體的星形，掛在不同的距離；位置照封面的排法，鏡頭走到正側面（0.30）時和封面一樣 ----
   // 後面再散一些小的四芒星和一整片有遠近的星點
   const stars = new Group();
@@ -297,6 +298,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
   const starField = makeStarField(Math.round(520 * deviceTier.particleScale));
   scene.add(stars, extraStars, starField);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #97 觀星者：第四輪改成立體人物（makeFigure：連續的軀幹、膠囊四肢、關節球，外面一圈墨線），整個人是封面上那個白色剪影 ----
   // 身高與站位照封面（頭頂 1160、腳底 1237，身體中心 x 474）；臉朝 +x（望遠鏡），雙手扶著鏡筒的後端，頭微微前傾湊近目鏡。
   // 墨線在白色的人形上就是封面版畫的那種分隔線（手臂疊在軀幹前、兩腿之間），夜空是黑的，外圈的墨線融進背景。
@@ -396,6 +398,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
   deck.position.set(-2.75, 0, 0);
   scene.add(deck);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 白色的圓台與球座的柱子：車床做的。黑色的球座和影子落在白色上才看得見 ----
   const terrace = lathe(mat.paper, [[0.0001, 0], [3.3, 0], [3.3, 0.05], [2.9, 0.05], [2.9, TERRACE_TOP], [0.0001, TERRACE_TOP]], 56);
   terrace.position.set(BALL.x, 0, 0);
@@ -405,6 +408,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
   pedestal.position.set(BALL.x, TERRACE_TOP, 0);
   scene.add(terrace, pedestal);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #99 水晶球：真的球，立在車床做的球座上（兩層黑色底盤、紅色的托），四周一圈紅色光芒 ----
   const ball = new Group();
   const baseY = TERRACE_TOP + PEDESTAL_H;
@@ -455,6 +459,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
   register(99, ball);
   scene.add(ball);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #117 整體圓形構圖：球裡的畫面，就是下一章（圓頂端的領袖）此刻的樣子 ----
   const portal = chapterContext.portal("stage");
   const disc = makePortalDisc(portal, chapterContext.resolution);
@@ -464,6 +469,7 @@ export default function createPrologueSet(chapterContext, plan, flat) {
 
   // 球座與球的影子：引擎的陰影貼圖投在白色的圓台上（第四輪拿掉平面投影）
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：從觀星者背後繞到側面，沿望遠鏡的方向移到水晶球前；之後推進球裡（update 裡接手） ----
   const track = makeCameraTrack([
     { t: -0.3, pos: [-7.4, 2.2, 3.4], at: [-1.2, 2.5, -2.4], fov: 40 }, // 背後偏左，越過肩膀看星空

@@ -222,7 +222,7 @@ function makeBundle(mat, rx, ry, creases) {
   return bundle;
 }
 
-export default function createFloorSet(chapterContext, plan, flat) {
+export default async function createFloorSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(40, 1, 0.05, 600);
@@ -234,7 +234,8 @@ export default function createFloorSet(chapterContext, plan, flat) {
   const { close, pullBack, others, wide } = PACE.morning.beats;
 
   // 上面的世界：和上一章同一個函式建出來的圓盤、隊伍、旗手、水晶球（不登記，那些編號屬於上一章）
-  const world = buildRimWorld(mat, buildQueueFlat(() => {}).parts);
+  const world = await buildRimWorld(mat, buildQueueFlat(() => {}).parts, undefined, () => chapterContext.yield?.());
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   scene.add(world.group);
 
   // ---- 營地：在圓盤底下的白色地面上，原點放在地面高度 ----
@@ -357,6 +358,7 @@ export default function createFloorSet(chapterContext, plan, flat) {
   const dust = new Snow({ count: Math.round(320 * deviceTier.particleScale), box: new Vector3(24, 5, 12), center: new Vector3(0, G + 2.5, -1), size: 22, speed: 0.45, wind: 0.5, color: BLACK, opacity: 0 });
   scene.add(dust);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：越過圓盤邊緣往下降 → 抱頭的人 → 退後仰看 → 整片營地 → 退到遠處 ----
   const sit = [BALL[0], G, BALL[1]];
   // 第三輪：整章只換一次推拉方向。先從上一章的最後一格一路往下推到抱頭的人面前（0–0.15），

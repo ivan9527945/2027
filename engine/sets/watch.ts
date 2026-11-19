@@ -219,7 +219,7 @@ export default function createWatchSet(chapterContext, plan, flat) {
   const middle = (Math.min(...xs) + Math.max(...xs)) / 2;
   const looks = [{ hair: "short" }, { hair: "long", build: 0.95 }, { hair: "short", build: 1.12 }, { hair: "bob" }];
   const variants = looks.map((look, k) => {
-    const person = makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, height: PERSON_HEIGHT, outline: "#f2efe6", outlineWidth: 0.026, ...look });
+    const person = makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, height: PERSON_HEIGHT, outline: "#f2efe6", outlineWidth: 0.026, detail: 0.5, ...look }); // 遠景群眾：面數約剩四分之一
     const head = person.userData.joints.head;
     for (const o of [...head.children]) if (o.geometry?.parameters?.radius === 0.022) head.remove(o); // 剪影的臉不要五官（黑鼻子的邊緣光會變成一個圈）
     person.userData.pose({ head: [-0.22 - k * 0.03, (k - 1.5) * 0.06, 0], armL: [0.04, 0, 0.1], armR: [0.04, 0, -0.1], spine: [-0.04, 0, 0] });

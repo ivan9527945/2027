@@ -166,7 +166,7 @@ function bakePerson(figure) {
   return person;
 }
 
-export default function createCoreSet(chapterContext, plan, flat) {
+export default async function createCoreSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(BLACK);
   const camera = new PerspectiveCamera(40, 1, 0.05, 300);
@@ -218,6 +218,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   });
   scene.add(motes);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #53 AI 大腦：壓扁的球疊出兩個半腦；線路是貼著腦葉起伏的紅色圓管加節點球（正反兩面都有）；中間一道發白的縫 ----
   const brain = new Group();
   const brainInk = mat.custom("#141414", BLACK, 0.9); // 大腦自己不吃自己的紅光，只留白色的邊緣光
@@ -274,6 +275,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
     cylinder(mat.ink, 0.13, 0.17, BRAIN.y + STEM_BOTTOM - 0.4, 0, 0.5, 0, 16),
   );
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #45 四名黑衣人（第四輪：立體人物）：黑西裝、紅臉；後三人的西裝前襟有兩道紅線（封面上的翻領），
   // 第一個是捲髮、第二個戴眼鏡、第四個留鬍子。四個人都雙手插在口袋裡站著。站在發亮的門前，黑色的人落在白光裡 ----
   // 門前的座標（x 沿著門、z 朝門外）→ 世界座標
@@ -359,6 +361,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   spillTurn.rotation.y = DOOR_TURN;
   scene.add(doorway, spillTurn);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #46 晶片：有厚度的紅色封裝，四邊各五支往下折的針腳，正反兩面是白框和凸起的晶粒；浮在人群旁邊慢慢轉 ----
   const chips = new Group();
   // 位置照封面：兩枚在四個人的左邊（中間那枚最大），一枚在右邊
@@ -386,6 +389,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   register(46, chips, { count: 3 });
   scene.add(chips);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #52 保險箱：厚壁的黑箱，箱內是三排數字；紅色的厚門有門栓、鉸鏈、轉盤和把手，0.445 往外彈開 ----
   const safe = new Group();
   const W = 1.5, H = 1.25, D = 1.1, T = 0.12, LIFT = 0.1, DOOR_T = 0.15;
@@ -446,6 +450,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   register(52, safe);
   scene.add(safe, lightPool(white, 1.75, 1.3, SAFE.x - 0.1, SAFE.z + 0.3)); // 保險箱腳下一圈探照燈的光
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #51 機器人：一節一節的方形肢體、白圈關節、爪形的手、尖頭的腳；背上一個紮了口的大麻袋，往左（反方向）跑 ----
   const robot = new Group();
   /** 一節肢體：從樞紐往下垂的方柱，樞紐上是白圈黑心的關節（封面上的畫法） */
@@ -526,6 +531,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   const spot = lightPool(white, 1.25, 0.8, 0, 0, 0.0035);
   scene.add(robot, spot);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #47 54 個 0 和 1：有厚度的小零件（0 是橢圓環、1 是帶勾的立體字），從保險箱噴出來落在地板上；落地的地方亮起一個白色光點 ----
   const digitGroup = new Group();
   const zeros = DIGITS.filter((d) => d.value === 0), ones = DIGITS.filter((d) => d.value === 1);
@@ -555,6 +561,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   const matrix = new Matrix4(), position = new Vector3(), rotation = new Quaternion(), scale = new Vector3();
   const tumbleAxis = new Vector3(1, 0.3, 0.2).normalize(), flatDown = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI / 2), yaw = new Quaternion(), up = new Vector3(0, 1, 0);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #48 充電中的紅色皮卡：車身是擠出的楔形側面輪廓，挖出輪拱和車窗；停在白色的充電車位上，背後是亮著的車庫門 ----
   const truck = new Group();
   const rig = new Group(); // 車和充電樁（站在車位的板子上）
@@ -649,6 +656,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   register(48, truck);
   scene.add(truck, bay);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 細節（第四輪）：讓黑色大廳裡的每個主體多一層可以落光、落排線的東西 ----
   const details = new Group();
   // 台座：紅色收邊上一圈白色螺栓、圓台側面四道散熱槽、地板上通往台座的三條粗電纜（紅色圓管，每隔一段一個白色的固定夾）
@@ -712,6 +720,7 @@ export default function createCoreSet(chapterContext, plan, flat) {
   // 影子（第四輪）：引擎的投影陰影接手。門口灑進來的光、探照燈的光圈、充電車位都是亮的，
   // 四個人、保險箱、機器人和皮卡的影子落在上面；黑色地板上看不到影子的地方，靠這些光交代接觸。
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭 ----
   // 2026-11-19 第三輪（鏡頭要順）：整章只剩兩次推拉反轉。
   // 從上方降到大腦前 → 0.3 之前繞著大腦往左，轉向四個人 → 往右橫移到保險箱 → 跟著衝出來的機器人，

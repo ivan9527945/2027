@@ -257,7 +257,7 @@ function reachTo(figure, side, target) {
   return best;
 }
 
-export default function createStageSet(chapterContext, plan, flat) {
+export default async function createStageSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(30, 1, 0.05, 500);
@@ -288,6 +288,7 @@ export default function createStageSet(chapterContext, plan, flat) {
   }
   scene.add(pines);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #7 高台：中央一塊高的，兩側各一階低的（插旗），正面三級台階。側面全黑；每一階的頂面鋪白，留一圈黑邊 ----
   // 白色的頂面讓黑西裝和黑色的布捲從高處看也分得出來，影子也有地方落
   const podium = new Group();
@@ -301,6 +302,7 @@ export default function createStageSet(chapterContext, plan, flat) {
   register(7, podium);
   scene.add(podium);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #1–6 領袖：第四輪改成立體人物（makeFigure），照封面上每個人的剪影與配色重做 ----
   // 身高從封面量（頭頂到腳底 455，1 像素 = S），肩寬照封面的半肩寬換成 build。每人的身體烘成少數幾個 mesh（六個人不烘會有五百個 draw call），
   // 頭另外烘一份，才能轉頭：鏡頭升高、繞到台後時，六個人的頭會極慢地跟著鏡頭轉（陰森版的「被注視」）。
@@ -356,6 +358,7 @@ export default function createStageSet(chapterContext, plan, flat) {
   register(5, leaders[4]);
   register(6, leaders[5]);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #8 捲旗 ×7、#9 紅旗 ×2：旗桿是圓柱加桿頂的球；布是真的體積 ----
   // 捲旗：車床做的布捲（上窄下寬、底下收尖），外面繞一道細白線當布邊；紅旗：垂著的布，橫切面是有褶的，亮暗面就是封面上那兩道布褶
   const makeFlag = ([x, topPy]: number[], index, red) => {
@@ -423,6 +426,7 @@ export default function createStageSet(chapterContext, plan, flat) {
 
   // 影子：第四輪拿掉平面投影，改用引擎的陰影貼圖（領袖落在白色台面上，旗子落在兩側那一階上）
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #10 握手的兩人：第四輪改成立體人物。紅色西裝、紅臉，黑色的翻領線；從兩側走過來（走路的關節動畫），伸出右手握上 ----
   const handshake = new Group();
   const MAN_H = 77 * S; // 封面上頭頂 476 到腳底 553
@@ -467,6 +471,7 @@ export default function createStageSet(chapterContext, plan, flat) {
   });
   register(10, handshake);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #11 通訊塔：真的格架；電波是塔頂兩側一道道發亮的圓弧 ----
   const tower = new Group();
   tower.add(makeLattice(white, TOWER.height, TOWER.halfBase));
@@ -500,6 +505,7 @@ export default function createStageSet(chapterContext, plan, flat) {
   }
   scene.add(pools);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 封面上黑色山丘裡的幾顆四芒星：立體的小星星，浮在坡面前，慢慢轉、各自閃爍 ----
   const sparkles = new Group();
   for (const [x, z, r, lift] of [[-3.4, 3.2, 0.2, 0.7], [-2.2, 5.4, 0.13, 0.6], [-4.3, 6.6, 0.1, 0.8], [3.3, 4.3, 0.16, 0.8], [2.4, 6.6, 0.1, 0.5], [4.4, 7.4, 0.13, 0.9], [-0.6, 4.6, 0.09, 0.6], [-3.0, 9.4, 0.11, 1.5], [3.2, 10.2, 0.09, 1.9]]) {
@@ -513,10 +519,12 @@ export default function createStageSet(chapterContext, plan, flat) {
   }
   scene.add(sparkles);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 空氣：山坡前緩緩飄過的白色光點，只有在黑色的山前看得見 ----
   const motes = new Snow({ count: Math.round(120 * deviceTier.particleScale), box: new Vector3(20, 9, 7), center: new Vector3(0, 4.2, 8.5), size: 46, speed: 0.1, wind: 0.22, color: WHITE });
   scene.add(motes);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：一個連續的長鏡頭 ----
   // 第三輪（鏡頭要順）：整章只有「先拉遠、再推近」一次方向改變。
   //   0 → 0.40 一路升高、往右繞、往後退：六人 → 越過右側的旗 → 到高台右後方俯看整面山坡（最遠）；

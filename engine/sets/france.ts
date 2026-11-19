@@ -185,7 +185,7 @@ function bakeStatic(group) {
   return baked;
 }
 
-export default function createFranceSet(chapterContext, plan, flat) {
+export default async function createFranceSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(40, 1, 0.05, 400);
@@ -205,6 +205,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   plaza.position.x = 4;
   scene.add(plaza);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #69 奧斯曼建築：黑色的方塊貼上立面，上面是真的斜屋頂、老虎窗和煙囪。左右各一棟 L 形的街廓圍住廣場 ----
   const facadeTexture = makeFacadeTexture();
   /** 一段街廓：長 length，立面朝本地的 +z，原點在底面中央 */
@@ -282,6 +283,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   }
   scene.add(bakeStatic(city));
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #67 瑪麗安娜像：真的圓柱基座，上面的人像是多層厚紙板（平面版的圖，只取基座以上的部分），舉起的手臂和橄欖枝另外一疊、比身體靠前 ----
   const statue = new Group();
   const STEP = 0.3, DRUM_R = 0.56, DRUM_H = 1.25, NECK_R = 0.43, NECK_H = 0.5;
@@ -416,6 +418,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   scene.add(kerb);
   scene.add(bakedStatue);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #68 攀上雕像的人：兩個有厚度的紙偶。右邊那個爬到圓柱頂上舉著手，左邊那個攀在基座上 ----
   const climbers = new Group();
   // 第五輪：真的一步一步爬。基座上的環是著力點（HOLDS 的索引），四肢照「右手、左腳、左手、右腳」的順序輪流往上換一格，
@@ -450,6 +453,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(68, climbers);
   scene.add(climbers);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #70 群眾（第四輪：立體人物）：四十個黑衣人排四排，面向雕像（鏡頭從背後穿過走道），白色描邊。
   //      照平面版每個人舉哪隻手（沒舉、左、右、雙手）分成幾種姿勢，每種先擺好姿勢烘成一個 mesh，再用 InstancedMesh 複製；
   //      每一幀只更新每個人的位置（舉手的人在跳）。每個人的前後位置和高矮都差一點；中間留一條走道給鏡頭穿過去 ----
@@ -461,7 +465,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
     const key = arms + (arms === "" ? n % 3 : "");
     if (!crowdVariants[key]) {
       const hair = ["short", "long", "curly", "cap"][(n + arms.length) % 4];
-      const person = makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, hair, build: 1 + (n % 2) * 0.1, coat: n % 3 === 1 ? mat.ink : undefined, outline: PAPER_LINE, outlineWidth: crowdLine });
+      const person = makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, hair, build: 1 + (n % 2) * 0.1, coat: n % 3 === 1 ? mat.ink : undefined, outline: PAPER_LINE, outlineWidth: crowdLine, detail: 0.6 }); // 群眾：鏡頭會穿過走道，比 watch 保守一點
       const up = (side) => (side === "L" ? { armL: [-0.15, 0, 2.7], elbowL: -0.2 } : { armR: [-0.15, 0, -2.7], elbowR: -0.2 });
       person.userData.pose({ armL: [0.05, 0, 0.12], armR: [0.05, 0, -0.12], ...(arms.includes("L") ? up("L") : {}), ...(arms.includes("R") ? up("R") : {}), head: [arms ? -0.25 : -0.05, 0, 0] });
       crowdVariants[key] = { baked: bakeFigure(plainFace(person)), members: [] };
@@ -500,6 +504,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(70, crowd, { count: 40 });
   scene.add(crowd);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #71 裂開的 € 標語：一塊有厚度的牌子（黑色的厚板，正面貼平面版的圖），兩根長桿把它舉到人群的頭上 ----
   const BANNER_SCALE = 4.2;
   const banner = new Group();
@@ -516,6 +521,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(71, banner);
   scene.add(banner);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #72 斷裂的管線：兩段真的圓柱，斷口兩側是法蘭；上半受光是紅的、下半是黑的。兩滴黑油 ----
   // 管線專用的材質：光從正上方來，所以從側面看只有上緣一條是紅的（封面上的畫法）
   const pipeMaterial = toonMaterial({ color: RED, shade: BLACK, light: new Vector3(0, 1, -0.15), rim: 0, threshold: 0.15, side: DoubleSide });
@@ -577,6 +583,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(72, pipeline);
   scene.add(pipeline);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #73 軍靴：真的模型（鞋底、紅色鞋底紋、鞋面、靴筒、紅鞋帶、提環）。鞋底朝著票箱那一側 ----
   const boot = new Group(); // 本地座標：+x 是鞋尖、+y 是靴筒、原點在鞋底中心
   const soleOutline = [[-0.76, -0.2], [-0.82, 0], [-0.76, 0.2], [-0.5, 0.26], [-0.2, 0.2], [0.15, 0.3], [0.5, 0.33], [0.75, 0.22], [0.82, 0], [0.75, -0.22], [0.5, -0.33], [0.15, -0.3], [-0.2, -0.2], [-0.5, -0.26]];
@@ -611,6 +618,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(73, boot);
   scene.add(boot);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #74 投票箱：真的箱子，紅色的頂面上一道投票口；紅手是有厚度的模型（袖子、手掌、選票各自擠出，正反兩面貼平面版的圖） ----
   const ballot = new Group();
   const [boxW, boxH, boxD] = BOX_SIZE;
@@ -660,6 +668,7 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(74, ballot);
   scene.add(ballot);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #75 兩棵松樹：真的模型（樹幹加一層層鋸齒邊的圓錐）。後面那一棵的樹梢頂著管線的右端（封面上它就在管線右端的正下方），前面那一棵比較大 ----
   const pines = new Group();
   for (const [x, z, height] of [[PIPE.breakX + 0.24 + PIPE.right - 0.5, PIPE.z, PIPE.y - PIPE.r + 0.14], [20.6, 0.9, 3.7]]) {
@@ -670,11 +679,13 @@ export default function createFranceSet(chapterContext, plan, flat) {
   register(75, pines, { count: 2 });
   scene.add(pines);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 空氣：廣場上被風帶著走的塵土 ----
   const dust = new Snow({ count: Math.round(200 * deviceTier.particleScale), box: new Vector3(34, 7, 18), center: new Vector3(7, 3.6, 2), size: 36, speed: 0.08, wind: 0.8, color: BLACK });
   scene.add(dust);
 
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭 ----
   // 2026-11-19 第三輪（鏡頭要順）：整章只剩兩次推拉反轉（約 0.5、0.83）。
   // 0.27 之前：貼著頭的高度穿過走道，視線從群眾的背影慢慢抬到雕像上，和注視點的距離幾乎不變（不再一路推到雕像腳下）；

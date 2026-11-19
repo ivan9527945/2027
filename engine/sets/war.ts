@@ -336,7 +336,7 @@ function orbitTrack(keys) {
   };
 }
 
-export default function createWarSet(chapterContext, plan) {
+export default async function createWarSet(chapterContext, plan) {
   const scene = new Scene();
   scene.background = new Color(WHITE); // 白色的天空（封面是白底）；白色的東西靠四周的黑色山塊和焦土襯出來
   const camera = new PerspectiveCamera(40, 1, 0.1, 400);
@@ -431,6 +431,7 @@ export default function createWarSet(chapterContext, plan) {
   });
   scene.add(pines);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #78 飛彈：4 枚有彈體的模型＋遠處 5 道紅色細長的 ----
   const missiles = new Group();
   const bodied = MISSILES.map(([, , , , , size]) => {
@@ -473,6 +474,7 @@ export default function createWarSet(chapterContext, plan) {
     object.visible = false;
   };
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #79 白線廢墟：左邊一棟只剩骨架，右邊一棟還有兩扇窗、缺了一角；牆腳是瓦礫 ----
   // 以封面像素建模（x − 195、1080 − y），正面朝本地 +Z，再整組轉向飛彈來的方向
   const ruins = new Group();
@@ -517,6 +519,7 @@ export default function createWarSet(chapterContext, plan) {
   register(79, ruins);
   scene.add(ruins);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #81 被炸的城市：黑色的樓，正面有白色的窗；站在爆炸前面。本地座標：x 是封面的左右、+Z 是正面 ----
   const city = new Group();
   const c = (px) => (px - 338) * 0.04, h = (py) => (1096 - py) * 0.04;
@@ -547,6 +550,7 @@ export default function createWarSet(chapterContext, plan) {
   for (const [x, z, r] of [[-2.5, -1.3, 0.16], [-1.5, 2.7, 0.2], [3.4, 2.4, 0.4]]) rocks.add(sphere(mat.ink, r, x, r * 0.55, z, 7, 5));
   scene.add(rocks);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #80 大爆炸：封面的紅、白兩層輪廓各擠出一點厚度、前後錯開，再加一組垂直交叉的，從側面看也有體積 ----
   const blast = new Group();
   const b = (points) => points.map(([x, y]) => [(x - 320) * 0.045, (1088 - y) * 0.045]);
@@ -576,6 +580,7 @@ export default function createWarSet(chapterContext, plan) {
     return puff;
   });
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #83 兩輛對射的戰車：右邊那輛是左邊的掉頭 ----
   const tanks = new Group();
   const leftTank = makeTank(mat, redFlat), rightTank = makeTank(mat, redFlat);
@@ -586,6 +591,7 @@ export default function createWarSet(chapterContext, plan) {
   register(83, tanks, { count: 2 });
   scene.add(tanks);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #84 砲擊點：九個尖角的紅色星爆、中心一小塊黑，在兩根砲管中間；加一片垂直交叉的和往外噴的紅色火花 ----
   const BURST = new Vector3(TX, 1.06, TZ);
   const burst = new Group();
@@ -614,6 +620,7 @@ export default function createWarSet(chapterContext, plan) {
   register(84, burstAll);
   scene.add(burstAll);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #85 白煙：一朵平底、上面好幾個圓頂的雲（封面上的樣子），由前後錯開的十幾顆不規則的球組成，每顆各自翻滾脹縮；
   // 下面一串小煙團不斷從左邊那輛的砲塔冒上來併進雲裡。升到白丘的稜線以上，襯著黑色的山 ----
   const smoke = new Group();
@@ -637,6 +644,7 @@ export default function createWarSet(chapterContext, plan) {
   register(85, smoke);
   scene.add(smoke);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #82 三架無人機 ----
   const drones = new Group();
   DRONES.forEach(([, , , size]) => {
@@ -647,6 +655,7 @@ export default function createWarSet(chapterContext, plan) {
   register(82, drones, { count: 3 });
   scene.add(drones);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 第四輪的細節：白色地面上的彈坑有隆起的坑緣、散落的黑色碎石，給投影和排線一個落點 ----
   const debrisField = new Group();
   for (let i = 0; i < 7; i++) {
@@ -674,6 +683,7 @@ export default function createWarSet(chapterContext, plan) {
   });
   // 影子（第四輪）：引擎的投影陰影接手；白色地面上的戰車、松樹、碎石、坑緣、落地的飛彈都投影。
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：0.30 之前是跟飛（下面用算的），之後照這條軌道 ----
   // 2026-11-19 第三輪：拿掉「繞到城市右側 → 0.545 甩到戰車」的甩鏡。現在整章的推拉只有三段：
   // 跟飛煞停時收近到城市前（看廢墟、爆炸）→ 0.37 起升高、越過城市上空，注視點一路轉向東邊的戰車（距離放大，像升降鏡頭）

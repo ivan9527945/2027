@@ -419,3 +419,15 @@ body.ready #view {
   color: var(--paper);
   text-decoration: none;
 }
+
+/* 量測 100lvh 用的探針（引擎讀它的高度） */
+.lvh-probe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100vh;
+  height: 100lvh;
+  visibility: hidden;
+  pointer-events: none;
+}

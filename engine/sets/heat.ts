@@ -375,7 +375,7 @@ function orbitTrack(keys) {
   };
 }
 
-export default function createHeatSet(chapterContext, plan, flat) {
+export default async function createHeatSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(36, 1, 0.05, 400);
@@ -429,6 +429,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
     scene.add(mound);
   }
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #76 森林大火：前後錯開的幾層火焰紙板（平面版畫好的那片火），加上黑色的松林和往上飄的火星 ----
   const fire = new Group();
   const slices = flat.parts.flames;
@@ -494,6 +495,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(76, fire);
   scene.add(fire);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #77 雄鹿（第四輪：模型）：站在坡頂、火的前面，臉朝左（封面的方向），黑色的身體落在紅色的火前 ----
   const stag = buildStag(mat);
   stag.scale.setScalar(1.3);
@@ -506,6 +508,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   scene.add(stag);
   const stagLight = new Vector3();
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #91 兩座風機：錐形塔柱、機艙、輪轂，三片葉片是擠出的薄板，繞著輪轂轉 ----
   const turbines = new Group();
   const rotors = [[-2.2, 1.55, 4.0, 2.0], [1.5, 1.2, 4.9, 2.4]].map(([dx, baseY, towerHeight, bladeLength]) => {
@@ -528,6 +531,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(91, turbines, { count: 2 });
   scene.add(turbines);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #93 溫度計：車床做的玻璃管（白色內壁加紅色外框），裡面是紅色球泡與紅柱，六道黑色刻度 ----
   const thermometer = new Group();
   const BULB_R = 0.22, BULB_Y = 0.24, TUBE_R = 0.085, TUBE_TOP = 1.5, COLUMN_BASE = 0.3;
@@ -573,6 +577,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(93, thermometer);
   scene.add(thermometer);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #104 農民（第四輪：立體人物）：全黑的側影、牛仔帽，雙手插腰站在農地上 ----
   const farmer = makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, hair: "cowboy", height: 1.8, build: 1.08 });
   const FARMER_POSE = { armL: [0, 0, 0.75], elbowL: [0, 0, -1.75], armR: [0, 0, -0.75], elbowR: [0, 0, 1.75], legL: [0, 0, 0.05], legR: [0, 0, -0.05] };
@@ -585,6 +590,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(104, farmer);
   scene.add(farmer);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #105 兩頭牛（第四輪：模型）：臉朝右（+x），走進來時四條腿對角交替，站定後低頭 ----
   const cows = new Group();
   const cowParts = [[-0.8, 0, 2.8], [-2.3, 0, 5.1]].map((rest, i) => {
@@ -597,6 +603,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(105, cows, { count: 2 });
   scene.add(cows);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #115 松樹 5 棵、#116 草叢 6 叢（第四輪：模型），圍著農地 ----
   const pines = new Group();
   const farmPine = buildPine(mat);
@@ -619,6 +626,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   register(116, tufts, { count: 6 });
   scene.add(pines, tufts);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 細節（第四輪）：農地上的車轍、碎石、乾枯的小草；溫度計插在地上的一圈土 ----
   const details = new Group();
   const rand = seededRandom(104);
@@ -635,6 +643,7 @@ export default function createHeatSet(chapterContext, plan, flat) {
   details.add(place(lathe(mat.ink, [[0, 0], [0.38, 0], [0.3, 0.07], [0.12, 0.1], [0, 0.1]], 18), THERMO[0], 0, THERMO[2]));
   scene.add(bakeFigure(details));
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：從溫度計的特寫開始，升高搖向火場和雄鹿，最後降到農地 ----
   // 2026-11-19 第三輪：整章只有三段推拉方向——
   // 溫度計炸開後就一路慢慢往後帶（溫度計 → 風機 → 火場 → 整片山坡，0.05–0.46 連續拉遠，沒有停在半路再衝）；

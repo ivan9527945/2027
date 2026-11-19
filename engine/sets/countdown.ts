@@ -252,7 +252,7 @@ function buildHorseRider(mat) {
   return group;
 }
 
-export default function createCountdownSet(chapterContext, plan, flat) {
+export default async function createCountdownSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(38, 1, 0.05, 400);
@@ -296,6 +296,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   for (let x = -14; x < 6; x += 1.4) quay.add(cylinder(mat.ink, 0.05, 0.065, 0.2, x, 0.1, SHORE_Z, 8));
   scene.add(bake(quay));
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #33 TRUMP 大樓：黑色主樓往上退縮三層，左邊較矮的一翼，腳下幾棟矮樓；立面是五道凸出來的紅色直條，樓頂一塊招牌 ----
   const towerParts = new Group();
   const SHAFT: [number, number, number] = [1.3, 2.7, 1.1]; // 主樓的寬、高、深
@@ -350,6 +351,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(33, tower);
   scene.add(tower);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #34 落日：海平線上一個紅色圓盤，前面橫著三道白色雲帶（兩頭露出圓盤的部分是紅的） ----
   const sun = new Group();
   const sunRed = mat.flat(RED, false), sunWhite = mat.flat(WHITE, false); // 太陽不受霧影響
@@ -361,6 +363,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(34, sun);
   scene.add(sun);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #35 遊艇：放樣的船身（船頭收尖並往前翹），三層斜切的艙房各鑲一道紅線，舷窗、欄杆、雷達桅 ----
   const yacht = new Group();
   const yachtParts = new Group();
@@ -411,6 +414,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(35, yacht);
   scene.add(yacht);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #37 沙漏：車床做的玻璃體，立在路中央的台座上；0.40 在空中翻一圈 ----
   // 和封面一樣：黑色的玻璃形狀，上半球頂端一小段白色空隙，下半球全黑；紅色背板；黑色的上下框板與四根柱子
   const pedestal = bake(new Group().add(
@@ -440,6 +444,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(37, hourglass);
   scene.add(hourglass);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #38 小黑鳥：小小的立體模型（身體、頭、喙、尾羽、兩片會拍的翅膀）。翻轉前停在沙漏頂上，被驚飛後落到旁邊 ----
   const bird = new Group();
   const birdBody = sphere(mat.ink, 0.07, 0, 0, 0, 14, 10);
@@ -467,6 +472,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(38, bird);
   scene.add(bird);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #39 牛仔與馬：第四輪改成立體模型（buildHorseRider：黑馬四條會走的腿、鬃毛、尾巴、白色籠頭與韁繩；牛仔是立體人物，跨坐在馬鞍上） ----
   const cowboy = buildHorseRider(mat);
   const horseLegs = cowboy.userData.legs;
@@ -474,6 +480,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(39, cowboy);
   scene.add(cowboy);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #40 克里姆林宮的塔、#41 紅星 ----
   // 由下往上：門樓（尖拱門框裡一道黑色的門）、寬的一層（一排窗，四角各一座黑色尖頂的小角樓）、鐘樓（四面有鐘）、
   // 鐘亭（成對的細長窗、四角的小尖塔、每面一個小山牆）、黑色的尖頂、紅星。兩側是有燕尾城垛的紅牆。
@@ -577,6 +584,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
   register(41, star);
   scene.add(star);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 松樹（封面上塔的右邊、沙漏的左邊都有一叢黑松）：塔的兩側、大樓和沙漏之間，還有遠處海岬上的一排 ----
   const pineParts = new Group();
   const PINES = [
@@ -606,6 +614,7 @@ export default function createCountdownSet(chapterContext, plan, flat) {
 
   // 影子：第四輪拿掉平面投影，路面上的東西由引擎的陰影貼圖投在白色的地上
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭：沿路往前推，在空間裡升降與繞行 ----
   const track = makeCameraTrack([
     { t: -0.3, pos: [-9.2, 0.45, 5.6], at: [-6.1, 1.9, -0.5], fov: 38 }, // 低角度仰看大樓

@@ -64,7 +64,8 @@ function makeGridTexture() {
   return texture;
 }
 
-export default function createCoverChapter(chapterContext, plan) {
+let bakedWorld: { target: WebGLRenderTarget; done: boolean } | null = null;
+export default async function createCoverChapter(chapterContext, plan) {
   const scene = new Scene();
   scene.background = new Color("#050505");
   scene.fog = new Fog("#050505", 16000, 60000);
@@ -78,10 +79,19 @@ export default function createCoverChapter(chapterContext, plan) {
   }
 
   // ---- 電腦桌（搬自 branded-website） ----
+  // 每一件之間讓出主執行緒（見 main.ts 的 buildContext）：電腦、擺飾、桌子、椅子各自都要建模、產生貼圖
+  const pause = () => chapterContext.yield?.();
   const desk = new Group();
   const computer = createComputer();
-  const decor = createDecor();
-  desk.add(computer.group, createKeyboard({ x: -200, y: DESK_Y, z: 1280 }), createDesk(), createChair(), decor);
+  await pause();
+  const decor = await createDecor(pause);
+  await pause();
+  const keyboard = createKeyboard({ x: -200, y: DESK_Y, z: 1280 });
+  const deskTop = createDesk();
+  await pause();
+  const chair = createChair();
+  await pause();
+  desk.add(computer.group, keyboard, deskTop, chair, decor);
   scene.add(desk);
   const floor = new Mesh(new PlaneGeometry(200000, 200000), new MeshBasicMaterial({ map: makeGridTexture() }));
   floor.rotation.x = -Math.PI / 2;
@@ -104,10 +114,16 @@ export default function createCoverChapter(chapterContext, plan) {
   scene.add(hemi, sun, sun.target, fill, fill.target, screenGlow);
 
   // ---- 螢幕：上一章的畫面 → 整張封面 ----
-  // 手機螢幕上這張封面最多也只有幾百像素寬：1024、兩倍取樣就夠（2048、四倍取樣光這張就佔約 130 MB）
-  const worldTargetSize = deviceTier.lowMemory ? 1024 : 2048;
-  const worldTarget = new WebGLRenderTarget(worldTargetSize, worldTargetSize, { samples: deviceTier.lowMemory ? 2 : 4 });
-  worldTarget.texture.colorSpace = SRGBColorSpace;
+  // 烘好的封面放在模組層級（bakedWorld）：手機上終章被卸載、捲回來重建時直接沿用，
+  // 不必再把十五章的平面版重建一遍來烘（約佔 20 MB，換掉一次很重的重建）。
+  if (!bakedWorld) {
+    // 手機螢幕上這張封面最多也只有幾百像素寬：1024、兩倍取樣就夠（2048、四倍取樣光這張就佔約 130 MB）
+    const size = deviceTier.lowMemory ? 1024 : 2048;
+    const target = new WebGLRenderTarget(size, size, { samples: deviceTier.lowMemory ? 2 : 4 });
+    target.texture.colorSpace = SRGBColorSpace;
+    bakedWorld = { target, done: false };
+  }
+  const worldTarget = bakedWorld.target;
   const screenMaterial = new ShaderMaterial({
     uniforms: {
       uPortal: previous ? chapterContext.portal(previous) : { value: null },
@@ -171,12 +187,11 @@ export default function createCoverChapter(chapterContext, plan) {
       gl.clear();
       gl.render(worldScene, worldCamera);
       gl.setRenderTarget(null);
+      bakedWorld.done = true;
     },
     elements: [],
-    /** 引擎卸載這一章時呼叫（lazy 模式、手機）：釋放烘封面用的渲染目標 */
-    dispose() {
-      worldTarget.dispose();
-    },
+    /** 封面是否已經烘過（終章重建時引擎據此跳過重烘） */
+    isWorldBaked: () => bakedWorld.done,
     update(progress, frame) {
       const p = clamp(progress, -0.3, 1.3);
       computer.tick(frame.time * 1000);

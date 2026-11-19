@@ -11,7 +11,7 @@
 //   detail  0.76–0.86  隊伍前端的特寫：旗手的腳、草叢小丘（第三輪：0.84 到位）
 //   raise   0.84–0.95  鏡頭橫移、降到隊伍腳邊、平台的邊緣（第三輪：1.0 到位、慢下來）；下一章從這一格硬切，繼續往下降
 import {
-  BufferGeometry, CircleGeometry, Color, CylinderGeometry, DoubleSide, Float32BufferAttribute, Group, IcosahedronGeometry, Matrix4, Mesh, MeshBasicMaterial,
+  BackSide, BufferGeometry, CircleGeometry, Color, CylinderGeometry, DoubleSide, Float32BufferAttribute, Group, IcosahedronGeometry, Matrix4, Mesh, MeshBasicMaterial,
   PerspectiveCamera, PlaneGeometry, RingGeometry, Scene, SphereGeometry, TorusGeometry, Vector3,
 } from "three";
 import type { Object3D } from "three";
@@ -248,13 +248,46 @@ export function silhouette(person, headScale = 1.2) {
   return person;
 }
 
-function walkerFrames(mat, hair) {
+// 走路動畫每一格烘好的幾何只跟髮型有關：快取起來，queue 和 floor（同一個世界）共用，
+// 手機上整章卸載後重建也不必再烘（原本這裡佔兩章建構時間的三分之二）。
+// 快取的是幾何和材質的「角色」：palette 裡的名字（重建時換成新 palette 的同名材質，霧等設定才會跟著新場景），
+// 或描邊材質本身（figure.ts 在模組層級共用）。出現認不得的材質就不快取，照舊每次烘。
+const PALETTE_KEYS = ["ink", "paper", "red", "darkRed"];
+const walkerCache = new Map(); // hair → 每一格的 [{ geometry, role }]
+function assembleBaked(parts, mat) {
+  const group = new Group();
+  const meshParts = [];
+  for (const { geometry, role } of parts) {
+    const material = typeof role === "string" ? mat[role] : role;
+    const mesh = new Mesh(geometry, material);
+    if (material.side === BackSide && material.uniforms?.uWidth) mesh.userData.isOutline = mesh.userData.noShadow = true;
+    group.add(mesh);
+    meshParts.push({ geometry, material });
+  }
+  Object.defineProperty(group.userData, "parts", { value: meshParts, enumerable: false, writable: true, configurable: true }); // 同 bakeFigure
+  return group;
+}
+async function walkerFrames(mat, hair, pause: () => Promise<void> | void) {
+  const cached = walkerCache.get(hair);
+  if (cached) return cached.map((parts) => assembleBaked(parts, mat));
+  const frames = await bakeWalkerFrames(mat, hair, pause);
+  const described = frames.map((frame) =>
+    frame.userData.parts.map(({ geometry, material }) => ({
+      geometry,
+      role: PALETTE_KEYS.find((key) => mat[key] === material) ?? (material.side === BackSide && material.uniforms?.uWidth ? material : null),
+    })),
+  );
+  if (described.every((parts) => parts.every((part) => part.role))) walkerCache.set(hair, described);
+  return frames;
+}
+async function bakeWalkerFrames(mat, hair, pause: () => Promise<void> | void) {
   const frames = [];
   for (let k = 0; k <= WALK_FRAMES; k++) {
     const person = silhouette(makeFigure(mat, { suit: mat.ink, skin: mat.ink, shirt: null, hair, coat: true, outline: PAPER_LINE, outlineWidth: 0.02 }), 1.3);
     if (k < WALK_FRAMES) walkCycle(person, (k / WALK_FRAMES) * Math.PI * 2, 0.75);
     else person.userData.pose({ armL: [0.04, 0, 0.12], armR: [0.04, 0, -0.12], elbowL: -0.18, elbowR: -0.18 });
     frames.push(bakeFigure(person));
+    if (k % 3 === 2) await pause(); // 一格約 10 ms（手機更久）：每三格讓出一次
   }
   return frames;
 }
@@ -317,8 +350,14 @@ function makeBearer(mat, height) {
  * @param {ReturnType<typeof makePalette>} mat
  * @param {{ people: Group, bearer: Mesh, flag: Group }} parts 平面版 queue 的 parts（人物的高度和旗面的圖）
  * @param {(id: number, object: import("three").Object3D, opts?: {count?: number}) => unknown} [register] floor 不傳，就不登記
+ * @param pause 段落之間呼叫（傳 chapterContext.yield）：建構拆成幾個短任務，不會一次卡住畫面
  */
-export function buildRimWorld(mat, parts, register: (id: number, object: Object3D, opts?: { count?: number }) => unknown = () => {}) {
+export async function buildRimWorld(
+  mat,
+  parts,
+  register: (id: number, object: Object3D, opts?: { count?: number }) => unknown = () => {},
+  pause: () => Promise<void> | void = () => {},
+) {
   const group = new Group();
   const random = seededRandom(1002);
 
@@ -342,6 +381,7 @@ export function buildRimWorld(mat, parts, register: (id: number, object: Object3
   disc.add(top, rim, underside, lip);
   group.add(disc, ground(WHITE, 500, GROUND_Y));
 
+  await pause();
   // ---- 地景（全部不會動，合併成少數幾個 mesh） ----
   const scenery = new Group();
   // 遠景（封面上這一帶只有白底和黑色的草叢）：很遠的地方幾座低矮的黑色土丘，被霧染淡；比人矮，不會和隊伍疊在一起
@@ -401,25 +441,28 @@ export function buildRimWorld(mat, parts, register: (id: number, object: Object3
   crackMesh.userData.noShadow = true;
   group.add(crackMesh);
 
+  await pause();
   // ---- 水晶球：隊伍後方的台座上 ----
   const ball = crystalBall(mat);
   ball.position.set(BALL[0], 0, BALL[1]);
   group.add(ball);
 
+  await pause();
   // ---- #100 排隊的十個人：立體人物，沿著平台邊緣由左往右排；高度照平面版每個人的圖 ----
   const variants = new Map();
   const people = new Group();
-  parts.people.children.forEach((sprite, i) => {
+  for (const [i, sprite] of parts.people.children.entries()) {
     const hair = QUEUE_HAIR[i];
-    if (!variants.has(hair)) variants.set(hair, walkerFrames(mat, hair));
-    const height = sprite.geometry.parameters.height * S * 0.97;
+    if (!variants.has(hair)) variants.set(hair, await walkerFrames(mat, hair, pause)); // 沒快取時這是整章最重的部分，裡面會分段讓出
+    const height = (sprite as Mesh<PlaneGeometry>).geometry.parameters.height * S * 0.97;
     const person = queuePerson(variants.get(hair), height, QUEUE_BUILD[i], i * 1.7);
     person.position.set(personX(i), 0, QUEUE_Z);
     people.add(person);
-  });
+  }
   register(100, people, { count: 10 });
   group.add(people);
 
+  await pause();
   // ---- #101 旗手（立體人物）；#102 旗：一根黑色旗桿加一塊會飄的布（正反兩面貼平面版畫好的雙頭鷹旗，中間夾一層暗紅當布的厚度） ----
   const bearer = new Group();
   const bearerBody = makeBearer(mat, parts.bearer.geometry.parameters.height * S * 0.98);
@@ -459,6 +502,7 @@ export function buildRimWorld(mat, parts, register: (id: number, object: Object3
   bearer.rotation.y = BEARER_YAW;
   group.add(bearer);
 
+  await pause();
   // ---- #103 草叢小丘：隊伍前端、平台邊上；腳下一圈碎土 ----
   const mound = new Group();
   const moundTuft = tuft3d(mat.ink, 0.95, 0.66);
@@ -474,6 +518,7 @@ export function buildRimWorld(mat, parts, register: (id: number, object: Object3
   register(103, mound);
   group.add(mound);
 
+  await pause();
   // ---- 空氣：風裡橫著飄的黑色塵粒 ----
   const motes = new Snow({ count: Math.round(260 * deviceTier.particleScale), box: new Vector3(26, 6, 12), center: new Vector3(0, 2.6, 0), size: 20, speed: 0.12, wind: 1.1, color: BLACK });
   group.add(motes);
@@ -524,14 +569,14 @@ export function buildRimWorld(mat, parts, register: (id: number, object: Object3
   return { group, update };
 }
 
-export default function createQueueSet(chapterContext, plan, flat) {
+export default async function createQueueSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(40, 1, 0.05, 600);
   const { entries, register } = createRegistry(plan.id);
   const mat = makePalette(LIGHT);
   addFog(scene, mat, WHITE, ...FOG);
-  const world = buildRimWorld(mat, flat.parts, register);
+  const world = await buildRimWorld(mat, flat.parts, register, () => chapterContext.yield?.());
   scene.add(world.group);
   const { pan, whip, settle } = PACE.corner.beats;
 

@@ -375,7 +375,7 @@ function buildCamelRider(mat) {
   return g;
 }
 
-export default function createGulfSet(chapterContext, plan, flat) {
+export default async function createGulfSet(chapterContext, plan, flat) {
   const scene = new Scene();
   scene.background = new Color(WHITE);
   const camera = new PerspectiveCamera(40, 1, 0.05, 500);
@@ -402,6 +402,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
 
   // ================= 綠洲 =================
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #32 岬角：伸進海裡的一塊台地，側面是黑色的崖壁，頂面是白沙；尖端朝右（和封面同向） ----
   const headland = slab([white, mat.ink], [[-11, -3.4], [-4, -3.7], [6, -3.2], [10, -1.8], [14, 0.4], [9.6, 1.5], [4, 2.3], [-3, 2.6], [-11, 2.4]], -SEA_Y);
   headland.position.y = SEA_Y / 2;
@@ -418,6 +419,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   }
   scene.add(dunes);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #27 新月（有厚度的白色月牙）、#28 五顆星（四芒星，放在不同的遠近） ----
   const moon = extrude(glow, crescentOutline(3.4), 0.5);
   moon.position.set(-24, 30, -78);
@@ -439,6 +441,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   register(28, stars, { count: 5 });
   scene.add(stars);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #30 天際線：對岸一座黑色的城，細長的高樓分前後兩排（後排在霧裡淡一點），有的退縮、有的頂著尖塔 ----
   const skylineParts = new Group();
   skylineParts.add(box(mat.ink, 86, 0.9, 10, -14, SEA_Y + 0.45, -47));
@@ -461,6 +464,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   register(30, skyline);
   scene.add(skyline);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #29 兩棵棕櫚：真的模型（一節節的樹幹、十二片有厚度的葉子、椰子），左邊那棵高、右邊那棵矮 ----
   const palms = new Group();
   for (const [x, z, height, lean, turn, seed] of [[-3.7, -1.5, 4.0, 0.16, 0.5, 29], [-1.6, -0.7, 2.9, -0.13, -0.4, 30]]) {
@@ -472,6 +476,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   register(29, palms, { count: 2 });
   scene.add(palms);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #31 駱駝與白袍騎士：真的 3D 模型（2026-11-19 使用者回饋「人物跟駱駝怪怪的」後改寫） ----
   // 先前用平面版的剪影做厚紙板，封面上那個抽象的白色剪影在 3D 裡讀起來像一隻白鳥。
   // 現在駱駝和騎士都用幾何體拼：黑色單峰駱駝（身體、駝峰、S 形的長脖子、頭、四條會走的腿、尾巴），
@@ -483,6 +488,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   register(31, camel);
   scene.add(camel);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #25 四引擎客機：機身上半紅、下半黑，黑色主翼下掛四具紅色引擎，紅色垂直尾翼；機頭朝 -x（左） ----
   const airliner = new Group();
   const fuselageProfile = [[0.02, 0], [0.16, 0.5], [0.33, 1.6], [0.42, 2.7], [0.42, 5.6], [0.37, 6.25], [0.24, 6.75], [0.02, 7]];
@@ -529,6 +535,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   const bollards = bake(bollardParts);
   port.add(bollards);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #86 工廠：黑色的廠房上立著 12 根煙囪，中間橫著管線 ----
   const factory = new Group();
   factory.add(
@@ -551,6 +558,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   factory.add(chimneys);
   port.add(factory);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #87 黑煙：六根最高的煙囪各冒一道，一顆顆黑色的煙團往右上方（戰機那邊）飄 ----
   const PLUMES = [1, 3, 5, 7, 9, 4].map((i) => CHIMNEYS[i]);
   const puffCount = Math.round(168 * deviceTier.particleScale / 6) * 6;
@@ -563,6 +571,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   port.add(smoke);
   const matrix = new Matrix4(), position = new Vector3(), scale = new Vector3(), still = new Quaternion();
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #88 油輪：黑色船身（俯視輪廓擠出，船頭朝右）、紅色水線、船尾的紅色艙房、甲板上的桅杆 ----
   const tanker = new Group();
   const HULL_H = 1.3, BEAM = 0.85;
@@ -607,6 +616,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
     return { top, bottom, links };
   });
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #90 四架戰機（一大三小）：紅色機身、三角翼、雙垂尾，機腹是黑的；機頭朝 +x ----
   function makeJet(size) {
     const jet = new Group();
@@ -641,6 +651,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
   register(90, jets, { count: 4 });
   port.add(jets);
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- #92 燃燒的油桶：車床做的鐵桶（三道箍），桶身幾道紅色反光；火是六片擠出的厚火舌交叉插在桶口，加上往上飄的紅色火星 ----
   const barrel = new Group();
   const R = 0.4;
@@ -677,6 +688,7 @@ export default function createGulfSet(chapterContext, plan, flat) {
 
   // 影子：第四輪拿掉平面投影，沙地上的駱駝與棕櫚、碼頭上的工廠與油桶由引擎的陰影貼圖投影
 
+  await chapterContext.yield?.(); // 讓出主執行緒：一章的建構拆成幾個短任務（見 main.ts 的 buildContext）
   // ---- 鏡頭 ----
   const planePos = new Vector3();
   const lookAtPlane = (p) => airlinerAt(p, planePos).toArray();

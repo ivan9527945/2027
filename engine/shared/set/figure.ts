@@ -61,11 +61,15 @@ export function inkOutline(root, { width = 0.012, color = "#050505" } = {}) {
   return root;
 }
 
+// 細緻度（FigureOptions.detail）：makeFigure 執行期間有效，圓柱、球、旋轉體的分段數照比例減少。
+// 遠景群眾用 0.5 左右：一個人從約 9,600 個三角形降到約 2,500 個，剪影加描邊在那個距離看不出差別。
+let DETAIL = 1;
+const seg = (n: number, min = 3) => Math.max(min, Math.round(n * DETAIL));
 const smoothProfile = (points) => points.map(([r, y]) => new Vector2(Math.max(r, 0.0001), y));
 /** 一段上粗下細的肢體：從關節往下（-y）長 length，上端半徑 r0、下端 r1，兩端都是圓的 */
 function limb(material, length, r0, r1) {
   const profile = [];
-  const steps = 10;
+  const steps = seg(10, 4);
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
     const r = r0 + (r1 - r0) * t;
@@ -74,10 +78,10 @@ function limb(material, length, r0, r1) {
   // 下端收圓
   profile.push([r1 * 0.7, -length - r1 * 0.55], [0, -length - r1]);
   profile.unshift([0, r0], [r0 * 0.7, r0 * 0.55]);
-  const geometry = new LatheGeometry(smoothProfile(profile.reverse()), 18);
+  const geometry = new LatheGeometry(smoothProfile(profile.reverse()), seg(18));
   return new Mesh(geometry, material);
 }
-const ball = (material, r, segments = 18) => new Mesh(new SphereGeometry(r, segments, Math.round(segments * 0.7)), material);
+const ball = (material, r, segments = 18) => new Mesh(new SphereGeometry(r, seg(segments), seg(Math.round(segments * 0.7), 2)), material);
 const joint = (x = 0, y = 0, z = 0) => {
   const g = new Group();
   g.position.set(x, y, z);
@@ -133,9 +137,20 @@ export interface FigureOptions {
   height?: number;
   outlineWidth?: number;
   outline?: string;
+  /** 細緻度 0–1（預設 1）：遠景群眾給 0.5 左右，面數約剩四分之一 */
+  detail?: number;
 }
 
 export function makeFigure(mat, o: FigureOptions = {}) {
+  const previous = DETAIL;
+  DETAIL = o.detail ?? 1;
+  try {
+    return buildFigure(mat, o);
+  } finally {
+    DETAIL = previous;
+  }
+}
+function buildFigure(mat, o: FigureOptions) {
   const scratch = o.scratch !== false;
   const dress = (m) => (scratch ? scratchy(mat, m) : m);
   const suit = dress(o.suit ?? mat.ink);
@@ -171,10 +186,10 @@ export function makeFigure(mat, o: FigureOptions = {}) {
   const torsoProfile = o.shoulders === "square"
     ? [[0.0, -0.02], [0.15, 0.0], [0.17, 0.12], [0.16, 0.26], [0.185, 0.38], [0.22, 0.5], [0.215, 0.545], [0.1, 0.565], [0.0, 0.575]]
     : [[0.0, -0.02], [0.15, 0.0], [0.17, 0.12], [0.155, 0.26], [0.17, 0.38], [0.2, 0.47], [0.17, 0.53], [0.08, 0.57], [0.0, 0.58]];
-  const torso = new Mesh(new LatheGeometry(smoothProfile(torsoProfile.map(([r, y]) => [r * build, y])), 24), suit);
+  const torso = new Mesh(new LatheGeometry(smoothProfile(torsoProfile.map(([r, y]) => [r * build, y])), seg(24)), suit);
   torso.scale.z = 0.62;
   spine.add(torso);
-  const pelvis = new Mesh(new SphereGeometry(0.16 * build, 20, 12), pants);
+  const pelvis = new Mesh(new SphereGeometry(0.16 * build, seg(20), seg(12, 2)), pants);
   pelvis.scale.set(1, 0.65, 0.7);
   pelvis.position.y = 0.02;
   hips.add(pelvis);
@@ -195,21 +210,21 @@ export function makeFigure(mat, o: FigureOptions = {}) {
   }
   // 長大衣：從腰往下開成一個圓台，蓋到膝蓋
   if (o.coat) {
-    const coat = new Mesh(new CylinderGeometry(0.17 * build, 0.24 * build, 0.55, 20, 1, true), o.coat === true ? suit : o.coat);
+    const coat = new Mesh(new CylinderGeometry(0.17 * build, 0.24 * build, 0.55, seg(20), 1, true), o.coat === true ? suit : o.coat);
     coat.scale.z = 0.7;
     coat.position.y = -0.2;
     hips.add(coat);
   }
   // 裙子
   if (o.skirt) {
-    const skirt = new Mesh(new CylinderGeometry(0.16 * build, 0.25 * build, 0.42, 20, 1, true), o.skirt === true ? pants : o.skirt);
+    const skirt = new Mesh(new CylinderGeometry(0.16 * build, 0.25 * build, 0.42, seg(20), 1, true), o.skirt === true ? pants : o.skirt);
     skirt.scale.z = 0.72;
     skirt.position.y = -0.15;
     hips.add(skirt);
   }
 
   // ---- 頭與脖子 ----
-  neck.add(new Mesh(new CylinderGeometry(0.05, 0.055, 0.12, 12), skin).translateY(0.0));
+  neck.add(new Mesh(new CylinderGeometry(0.05, 0.055, 0.12, seg(12)), skin).translateY(0.0));
   const skull = ball(skin, 0.105, 22);
   skull.scale.set(0.92, 1.12, 1);
   skull.position.y = 0.1;
@@ -281,7 +296,7 @@ function addHair(head, kind, hair, mat) {
     return mesh;
   };
   const cap = (r, sy = 1, y = 0.13, z = -0.01) => {
-    const m = new Mesh(new SphereGeometry(r, 22, 12, 0, Math.PI * 2, 0, Math.PI * 0.42), hair);
+    const m = new Mesh(new SphereGeometry(r, seg(22), seg(12, 2), 0, Math.PI * 2, 0, Math.PI * 0.42), hair);
     m.scale.y = sy;
     return add(m, 0, y, z);
   };
@@ -293,13 +308,13 @@ function addHair(head, kind, hair, mat) {
       break;
     case "long": {
       cap(0.116, 1);
-      const back = new Mesh(new CylinderGeometry(0.1, 0.13, 0.32, 18, 1, true, Math.PI * 0.6, Math.PI * 1.8), hair);
+      const back = new Mesh(new CylinderGeometry(0.1, 0.13, 0.32, seg(18), 1, true, Math.PI * 0.6, Math.PI * 1.8), hair);
       add(back, 0, -0.02, -0.01);
       break;
     }
     case "bob": {
       cap(0.118, 1.05);
-      const sides = new Mesh(new CylinderGeometry(0.115, 0.125, 0.16, 18, 1, true, Math.PI * 0.7, Math.PI * 1.6), hair);
+      const sides = new Mesh(new CylinderGeometry(0.115, 0.125, 0.16, seg(18), 1, true, Math.PI * 0.7, Math.PI * 1.6), hair);
       add(sides, 0, 0.06, 0);
       break;
     }
@@ -314,32 +329,32 @@ function addHair(head, kind, hair, mat) {
     case "keffiyeh": {
       // 頭巾：蓋住頭頂和後腦，垂到肩上；臉露出來
       const cloth = kind === "hijab" ? (hair === mat.ink ? mat.paper : hair) : mat.paper;
-      const hood = new Mesh(new SphereGeometry(0.128, 22, 16, Math.PI * 0.62, Math.PI * 1.76), cloth);
+      const hood = new Mesh(new SphereGeometry(0.128, seg(22), seg(16, 2), Math.PI * 0.62, Math.PI * 1.76), cloth);
       hood.scale.y = 1.12;
       add(hood, 0, 0.1, -0.01);
-      const drape = new Mesh(new CylinderGeometry(0.115, 0.17, 0.26, 20, 1, true, Math.PI * 0.62, Math.PI * 1.76), cloth);
+      const drape = new Mesh(new CylinderGeometry(0.115, 0.17, 0.26, seg(20), 1, true, Math.PI * 0.62, Math.PI * 1.76), cloth);
       add(drape, 0, -0.06, -0.01);
       if (kind === "keffiyeh") {
-        const band = new Mesh(new TorusGeometry(0.118, 0.014, 8, 26), mat.ink);
+        const band = new Mesh(new TorusGeometry(0.118, 0.014, seg(8), seg(26)), mat.ink);
         band.rotation.x = Math.PI / 2;
         add(band, 0, 0.17, -0.005);
       }
       break;
     }
     case "cowboy": {
-      const brim = new Mesh(new CylinderGeometry(0.2, 0.2, 0.012, 26), hair);
+      const brim = new Mesh(new CylinderGeometry(0.2, 0.2, 0.012, seg(26)), hair);
       add(brim, 0, 0.18, 0);
-      add(new Mesh(new CylinderGeometry(0.085, 0.105, 0.12, 20), hair), 0, 0.245, 0);
+      add(new Mesh(new CylinderGeometry(0.085, 0.105, 0.12, seg(20)), hair), 0, 0.245, 0);
       break;
     }
     case "helmet": {
       cap(0.13, 0.9, 0.12, 0);
-      add(new Mesh(new CylinderGeometry(0.15, 0.15, 0.01, 24), hair), 0, 0.12, 0);
+      add(new Mesh(new CylinderGeometry(0.15, 0.15, 0.01, seg(24)), hair), 0, 0.12, 0);
       break;
     }
     case "cap": {
       cap(0.115, 0.9);
-      const visor = new Mesh(new CylinderGeometry(0.08, 0.08, 0.01, 18, 1, false, -Math.PI / 2, Math.PI), hair);
+      const visor = new Mesh(new CylinderGeometry(0.08, 0.08, 0.01, seg(18), 1, false, -Math.PI / 2, Math.PI), hair);
       add(visor, 0, 0.15, 0.08);
       break;
     }

@@ -393,14 +393,21 @@ function createVRVisor() {
   return g
 }
 
-export function createDecor() {
-  const g = group([
-    createFloppies(), createCassette(), createMug(), createRubiks(),
-    createNotepad(), createLamp(), createBoombox(),
-    createCompass(), createTrySquare(), createAshlars(), createGeometryBook(),
-    createMagazine(), createVHSStack(),
-    createSaxophone(), createMarsGlobe(), createTinRobot(), createHoloProjector(), createVRVisor(),
-  ])
+// pause：每建幾件呼叫一次（傳 chapterContext.yield），建構拆成幾個短任務，不會一次卡住畫面
+export async function createDecor(pause = () => {}) {
+  const makers = [
+    createFloppies, createCassette, createMug, createRubiks,
+    createNotepad, createLamp, createBoombox,
+    createCompass, createTrySquare, createAshlars, createGeometryBook,
+    createMagazine, createVHSStack,
+    createSaxophone, createMarsGlobe, createTinRobot, createHoloProjector, createVRVisor,
+  ]
+  const items = []
+  for (const [i, make] of makers.entries()) {
+    items.push(make())
+    if (i % 6 === 5) await pause()
+  }
+  const g = group(items)
   g.name = 'decor'
   g.children.forEach(mergeStaticMeshes)
   return g

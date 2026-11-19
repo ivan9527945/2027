@@ -27,7 +27,12 @@ export default function Experience({ children }: { children: ReactNode }) {
           <path className="line" d="M6 9l6 6 6-6" />
         </svg>
       </div>
-      <div className="captions" id="captions" aria-live="off" />
+      {/* 引擎會往字幕容器裡加元素。引擎在 React 水合之前就啟動，手機 CPU 慢時會比水合先改到 DOM；
+          用 dangerouslySetInnerHTML 讓 React 不比對它的子節點，否則水合失敗、React 重建整個 body，
+          引擎手上的 canvas 就脫離頁面，畫面永遠停在載入中（2026-11-19 實測 CPU 降速 4 倍時發生）。 */}
+      <div className="captions" id="captions" aria-live="off" dangerouslySetInnerHTML={{ __html: "" }} />
+      {/* 量測 100lvh 的探針：由伺服器端渲染，引擎不必自己往 body 加元素（理由同上） */}
+      <div className="lvh-probe" id="lvh-probe" aria-hidden="true" />
       {children}
     </>
   );
