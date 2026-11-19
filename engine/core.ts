@@ -34,6 +34,9 @@ const deviceTier = {
   shadows: !isCoarsePointer,
   // 真的投影陰影（shadow map，第四輪）：所有裝置都開，手機用 1024 的陰影貼圖（各章已經不再用平面投影）
   shadowMaps: true,
+  // 記憶體吃緊的裝置（手機、平板）：iOS Safari 分頁超過約 1 GB 就會被系統砍掉（「重複發生問題」）。
+  // 開啟時渲染目標用較少的多重取樣、終章烘焙用較小的貼圖，而且只讓目前章節附近的資源常駐 GPU（見 main.ts 的 updateResidency）。
+  lowMemory: isCoarsePointer,
 };
 const INK = "#050505";
 const PAPER = "#f2efe6";

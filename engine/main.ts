@@ -170,7 +170,7 @@ const hasFloatTargets =
   renderer.extensions.has("EXT_color_buffer_float");
 const RENDER_TARGET_OPTIONS = {
   type: hasFloatTargets ? HalfFloatType : UnsignedByteType,
-  samples: 4,
+  samples: deviceTier.lowMemory ? 2 : 4, // 手機：多重取樣減半，省下約一半的渲染緩衝記憶體
   depthBuffer: true,
 };
 const renderTargetPool = [];
@@ -555,6 +555,9 @@ function prewarm(mark = (_k: string) => {}) {
     if (k === undefined) return mark("prewarm:all");
     // 使用者已經捲到這一章附近就立刻做（不等空閒）
     prewarmChapter(chapters[k]);
+    // 手機：預熱完（shader 編好、陰影建好）如果不在常駐視窗裡，資源馬上釋放，記憶體不會一路累積
+    residentKey = "";
+    updateResidency(residentIndices);
     idle(next);
   };
   idle(next);
@@ -564,6 +567,76 @@ function ensurePrewarmed(index) {
   const chapter = chapters[index];
   if (chapter && !chapter.prewarmed) prewarmChapter(chapter);
 }
+
+// ---- GPU 資源的常駐視窗（lazy loading，2026-11-19 使用者回報「實體手機無法開啟」） ----
+// 原本每一章的貼圖、幾何、陰影貼圖預熱後全部常駐 GPU，手機上加起來超過 1 GB，iOS Safari 直接把分頁砍掉。
+// 記憶體吃緊的裝置（deviceTier.lowMemory）只讓「正在畫的章、前後各一章、它們的 portal」常駐；
+// 其他章的資源釋放掉（shader 程式保留，所以重新載入只是重傳貼圖、幾何，不用重新編譯）。
+// 捲到某一章的前一章時它就進入視窗，在那時先上傳，進場那一幀不會卡。
+// three.js 對 dispose 過的貼圖／幾何下次用到會自動重傳，所以就算漏判也只是多傳一次，不會畫錯。
+// 渲染目標的貼圖（portal、終章烘好的封面）不能釋放：內容是畫出來的，釋放就沒了。
+type Resources = { textures: Set<Texture>; geometries: Set<any> };
+function collectResources(root, out: Resources, skip?: Set<any>) {
+  const visit = (object) => {
+    if (skip?.has(object)) return;
+    if (object.geometry) out.geometries.add(object.geometry);
+    const materials = [object.material, object.customDepthMaterial, object.customDistanceMaterial].flat().filter(Boolean);
+    for (const material of materials) {
+      for (const value of Object.values(material as Record<string, any>)) if (value?.isTexture) out.textures.add(value);
+      for (const uniform of Object.values((material.uniforms ?? {}) as Record<string, any>)) {
+        const v = uniform?.value;
+        if (v?.isTexture) out.textures.add(v);
+        else if (Array.isArray(v)) for (const t of v) if (t?.isTexture) out.textures.add(t);
+      }
+    }
+    for (const child of object.children) visit(child);
+  };
+  visit(root);
+  return out;
+}
+const isStaged = (chapter) => !chapter.set3d && !chapter.bakeWorld && Boolean(chapter.group || chapter.showsWholeWorld);
+let residentKey = "";
+function updateResidency(indices: number[]) {
+  if (!deviceTier.lowMemory || !chapters.length) return;
+  const keep = new Set<number>();
+  for (const i of indices) {
+    for (const k of [i - 1, i, i + 1]) if (chapters[k]) keep.add(k);
+    for (const id of chapters[i]?.portals ?? []) {
+      const k = chapters.findIndex((c) => c.id === id);
+      if (k >= 0) keep.add(k);
+    }
+  }
+  const key = [...keep].sort((a, b) => a - b).join(",");
+  if (key === residentKey) return;
+  residentKey = key;
+  // 平面版元素（世界群組）是所有「立在封面上」的章共用的，會被借進正在畫的那一章的場景：分開處理
+  const worldRoots = new Set(worldGroups.map((w) => w.group));
+  const worldNeeded = [...keep].some((k) => isStaged(chapters[k]));
+  const kept: Resources = { textures: new Set(), geometries: new Set() };
+  for (const k of keep) collectResources(chapters[k].scene, kept, worldNeeded ? undefined : worldRoots);
+  if (worldNeeded) for (const root of worldRoots) collectResources(root, kept);
+  const far: Resources = { textures: new Set(), geometries: new Set() };
+  chapters.forEach((chapter, k) => {
+    if (keep.has(k) || !chapter.prewarmed) return;
+    collectResources(chapter.scene, far, worldRoots);
+    if (chapter.shadowLight?.shadow.map) {
+      chapter.shadowLight.shadow.map.dispose();
+      chapter.shadowLight.shadow.map = null; // 下次畫到時 three.js 會重建
+    }
+    chapter.evicted = true;
+  });
+  if (!worldNeeded) for (const root of worldRoots) collectResources(root, far);
+  for (const texture of far.textures) if (!kept.textures.has(texture) && !(texture as any).isRenderTargetTexture) texture.dispose();
+  for (const geometry of far.geometries) if (!kept.geometries.has(geometry)) geometry.dispose();
+  // 進入視窗、之前被釋放過的章：先把貼圖傳上去（幾何在第一次畫的時候傳，成本很小）
+  let reload = false;
+  for (const k of keep) {
+    if (chapters[k].evicted) reload = true;
+    chapters[k].evicted = false;
+  }
+  if (reload) for (const texture of kept.textures) if (!(texture as any).isRenderTargetTexture) renderer.initTexture(texture);
+}
+let residentIndices = [0];
 const captionList = [];
 function buildCaptionList() {
   captionList.length = 0;
@@ -1152,6 +1225,8 @@ function tick() {
   renderFrameNumber++;
   renderTargetCursor = 0;
   const [fromIndex, toIndex, mix, kind] = currentTransition();
+  residentIndices = fromIndex === toIndex ? [fromIndex] : [fromIndex, toIndex];
+  updateResidency(residentIndices);
   const fromTarget = renderChapter(fromIndex);
   const toTarget = mix > 0 ? renderChapter(toIndex) : fromTarget;
   const fromChapter = chapters[fromIndex];

@@ -104,7 +104,9 @@ export default function createCoverChapter(chapterContext, plan) {
   scene.add(hemi, sun, sun.target, fill, fill.target, screenGlow);
 
   // ---- 螢幕：上一章的畫面 → 整張封面 ----
-  const worldTarget = new WebGLRenderTarget(2048, 2048, { samples: 4 });
+  // 手機螢幕上這張封面最多也只有幾百像素寬：1024、兩倍取樣就夠（2048、四倍取樣光這張就佔約 130 MB）
+  const worldTargetSize = deviceTier.lowMemory ? 1024 : 2048;
+  const worldTarget = new WebGLRenderTarget(worldTargetSize, worldTargetSize, { samples: deviceTier.lowMemory ? 2 : 4 });
   worldTarget.texture.colorSpace = SRGBColorSpace;
   const screenMaterial = new ShaderMaterial({
     uniforms: {
