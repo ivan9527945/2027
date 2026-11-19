@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 瀏覽器頁籤的圖示：單純一隻眼睛（使用者要求）。杏仁形的眼眶、黑色的虹膜、一點反光 -->
+  <path d="M3 32C12 17 22 11 32 11C42 11 52 17 61 32C52 47 42 53 32 53C22 53 12 47 3 32Z" fill="#f2efe6" stroke="#050505" stroke-width="5" stroke-linejoin="round" />
+  <circle cx="32" cy="32" r="14" fill="#050505" />
+  <circle cx="32" cy="32" r="5.5" fill="#c8281e" />
+  <circle cx="37.5" cy="26.5" r="3.2" fill="#f2efe6" />
+</svg>

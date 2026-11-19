@@ -1,0 +1,37 @@
+// 章節與 3D 場景的載入表（原本用 Vite 的 import.meta.glob；Next.js 沒有這個功能，改成明列）。
+// 新增章節或場景時要在這裡加一行。
+export const chapterModules = {
+  "./chapters/core.js": () => import("./chapters/core"),
+  "./chapters/countdown.js": () => import("./chapters/countdown"),
+  "./chapters/cover.js": () => import("./chapters/cover"),
+  "./chapters/floor.js": () => import("./chapters/floor"),
+  "./chapters/france.js": () => import("./chapters/france"),
+  "./chapters/gulf.js": () => import("./chapters/gulf"),
+  "./chapters/heat.js": () => import("./chapters/heat"),
+  "./chapters/market.js": () => import("./chapters/market"),
+  "./chapters/orbit.js": () => import("./chapters/orbit"),
+  "./chapters/pharma.js": () => import("./chapters/pharma"),
+  "./chapters/prologue.js": () => import("./chapters/prologue"),
+  "./chapters/queue.js": () => import("./chapters/queue"),
+  "./chapters/reboot.js": () => import("./chapters/reboot"),
+  "./chapters/stage.js": () => import("./chapters/stage"),
+  "./chapters/war.js": () => import("./chapters/war"),
+  "./chapters/watch.js": () => import("./chapters/watch"),
+};
+export const setModules = {
+  "./sets/core.js": () => import("./sets/core"),
+  "./sets/countdown.js": () => import("./sets/countdown"),
+  "./sets/floor.js": () => import("./sets/floor"),
+  "./sets/france.js": () => import("./sets/france"),
+  "./sets/gulf.js": () => import("./sets/gulf"),
+  "./sets/heat.js": () => import("./sets/heat"),
+  "./sets/market.js": () => import("./sets/market"),
+  "./sets/orbit.js": () => import("./sets/orbit"),
+  "./sets/pharma.js": () => import("./sets/pharma"),
+  "./sets/prologue.js": () => import("./sets/prologue"),
+  "./sets/queue.js": () => import("./sets/queue"),
+  "./sets/reboot.js": () => import("./sets/reboot"),
+  "./sets/stage.js": () => import("./sets/stage"),
+  "./sets/war.js": () => import("./sets/war"),
+  "./sets/watch.js": () => import("./sets/watch"),
+};

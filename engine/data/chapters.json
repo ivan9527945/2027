@@ -1,0 +1,18 @@
+[
+  {"id": "prologue", "title": "序：水晶球", "duration": 3.5, "headline": null, "elements": [97, 98, 99, 117], "pace": "book"},
+  {"id": "stage", "title": "權力舞台", "duration": 2.5, "headline": "T1", "elements": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "pace": "city"},
+  {"id": "countdown", "title": "倒數按下去", "duration": 3.5, "headline": "T1", "elements": [33, 34, 35, 36, 37, 38, 39, 40, 41], "pace": "street"},
+  {"id": "gulf", "title": "伊朗之後", "duration": 2.5, "headline": "T3", "elements": [25, 26, 27, 28, 29, 30, 31, 32, 86, 87, 88, 89, 90, 92], "pace": "matches"},
+  {"id": "orbit", "title": "太空與極地", "duration": 3, "headline": null, "elements": [12, 13, 14, 15, 16, 17, 18, 19, 20], "pace": "corner"},
+  {"id": "market", "title": "機構與賭注", "duration": 3, "headline": "T2", "elements": [21, 22, 23, 24, 49, 50, 94, 95, 96], "pace": "stove"},
+  {"id": "france", "title": "法國", "duration": 3.5, "headline": "T5", "elements": [67, 68, 69, 70, 71, 72, 73, 74, 75], "pace": "goose"},
+  {"id": "watch", "title": "看螢幕的人", "duration": 2.5, "headline": null, "elements": [42, 43, 44], "pace": "matches"},
+  {"id": "core", "title": "圓心", "duration": 4, "headline": "T2", "elements": [45, 46, 47, 48, 51, 52, 53], "pace": "grandmother"},
+  {"id": "pharma", "title": "針筒到口紅", "duration": 3, "headline": null, "elements": [54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66], "pace": "corner"},
+  {"id": "heat", "title": "又一次最熱年", "duration": 3, "headline": "T4", "elements": [76, 77, 91, 93, 104, 105, 115, 116], "pace": "stove"},
+  {"id": "war", "title": "戰火", "duration": 3.5, "headline": null, "elements": [78, 79, 80, 81, 82, 83, 84, 85], "pace": "tree"},
+  {"id": "reboot", "title": "舊片重映", "duration": 2.5, "headline": "T6", "elements": [106, 107], "pace": "matches"},
+  {"id": "queue", "title": "隊伍", "duration": 3, "headline": null, "elements": [100, 101, 102, 103], "pace": "corner"},
+  {"id": "floor", "title": "世界的地板", "duration": 3, "headline": null, "elements": [108, 109, 110, 111, 112, 113, 114], "pace": "morning"},
+  {"id": "cover", "title": "終：完整的圓", "duration": 3, "headline": null, "elements": [], "allElements": true, "pace": "close"}
+]

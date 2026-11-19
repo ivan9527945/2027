@@ -1,0 +1,1065 @@
+{
+  "source": "The Economist — The World Ahead 2027 封面",
+  "image_file": "/Users/satoshi/Downloads/S__189603842.jpg",
+  "scan_method": "第二次掃描：封面切成 4×4 共 16 區、放大 3 倍，再加上局部 3–4 倍特寫，逐一核對",
+  "scan_date": "2026-11-18",
+  "notes": "身分或象徵的詮釋都標在 interpretation 欄，是推測不是確定。成群的元素記一項，數量寫在 count。",
+  "headlines": [
+    {
+      "id": "T1",
+      "en": "Trump's final chapter — Not going quietly",
+      "zh": "川普的最後篇章：不會安靜退場"
+    },
+    {
+      "id": "T2",
+      "en": "Artificial intelligence — Acceleration, risks and backlash",
+      "zh": "人工智慧：加速、風險與反撲"
+    },
+    {
+      "id": "T3",
+      "en": "After Iran — Regional and global reverberations",
+      "zh": "伊朗之後：區域與全球餘波"
+    },
+    {
+      "id": "T4",
+      "en": "Climate change — Hottest year ever, again",
+      "zh": "氣候變遷：又一次史上最熱年"
+    },
+    {
+      "id": "T5",
+      "en": "Populism on the rise — What is mightier than Le Pen?",
+      "zh": "民粹崛起：有什麼比勒朋更強大？"
+    },
+    {
+      "id": "T6",
+      "en": "Hollywood reboots — Franchise fatigue",
+      "zh": "好萊塢重啟：系列電影疲乏"
+    }
+  ],
+  "regions": [
+    {
+      "region": "A. 頂部：權力舞台",
+      "items": [
+        {
+          "id": 1,
+          "name": "紅髮女性",
+          "count": 1,
+          "color": "黑衣、紅髮",
+          "detail": "黑色套裝，站在高台最左",
+          "interpretation": "某國女性領導人"
+        },
+        {
+          "id": 2,
+          "name": "光頭男性",
+          "count": 1,
+          "color": "黑西裝",
+          "detail": "高台左二",
+          "interpretation": ""
+        },
+        {
+          "id": 3,
+          "name": "橘黃頭髮男性",
+          "count": 1,
+          "color": "黑西裝、紅領帶",
+          "detail": "高台正中央",
+          "interpretation": "疑似川普（呼應 T1）"
+        },
+        {
+          "id": 4,
+          "name": "黑人男性",
+          "count": 1,
+          "color": "黑西裝、紅領帶",
+          "detail": "高台右三",
+          "interpretation": ""
+        },
+        {
+          "id": 5,
+          "name": "手持空白標語牌的人",
+          "count": 1,
+          "color": "紅臉、紅袖、紅褲、黑背心",
+          "detail": "雙手在身前拿著一塊白色空白牌子",
+          "interpretation": "抗議者、候選人，或未知的新面孔"
+        },
+        {
+          "id": 6,
+          "name": "黑色捲髮女性",
+          "count": 1,
+          "color": "黑衣",
+          "detail": "高台最右",
+          "interpretation": ""
+        },
+        {
+          "id": 7,
+          "name": "黑色高台（領袖並排站立）",
+          "count": 1,
+          "color": "黑",
+          "detail": "六人並排，像峰會合照或閱兵台",
+          "interpretation": "G7/G20 等峰會，或權力格局"
+        },
+        {
+          "id": 8,
+          "name": "黑色柏樹或捲起的黑旗",
+          "count": 7,
+          "color": "黑",
+          "detail": "高台左 3、右 4，頂端尖、下有細桿",
+          "interpretation": "可能是捲起的旗幟或柏樹"
+        },
+        {
+          "id": 9,
+          "name": "紅色旗幟",
+          "count": 2,
+          "color": "紅",
+          "detail": "高台左右各 1 面，夾在黑色柏樹或黑旗之間",
+          "interpretation": ""
+        },
+        {
+          "id": 10,
+          "name": "兩名男子握手",
+          "count": 1,
+          "color": "紅",
+          "detail": "站在高台下方的黑色山坡上",
+          "interpretation": "外交協議或交易"
+        },
+        {
+          "id": 11,
+          "name": "通訊塔",
+          "count": 1,
+          "color": "白線、黑底",
+          "detail": "鐵塔，兩側有電波弧線",
+          "interpretation": "廣播、媒體、5G 或電信"
+        }
+      ]
+    },
+    {
+      "region": "B. 左上：太空與極地",
+      "items": [
+        {
+          "id": 12,
+          "name": "黑色太空區塊",
+          "count": 1,
+          "color": "黑",
+          "detail": "散布白色四芒星",
+          "interpretation": "太空"
+        },
+        {
+          "id": 13,
+          "name": "白色星星",
+          "count": 11,
+          "color": "白",
+          "detail": "散在太空區塊；數量於 2026-11-18 放大核對",
+          "interpretation": ""
+        },
+        {
+          "id": 14,
+          "name": "人造衛星",
+          "count": 1,
+          "color": "紅白",
+          "detail": "4 片紅色格狀太陽能板、白色本體上有紅圓，還有碟形天線",
+          "interpretation": "通訊或軍事衛星"
+        },
+        {
+          "id": 15,
+          "name": "太空人",
+          "count": 1,
+          "color": "紅",
+          "detail": "用繩索連著衛星，正在太空漫步",
+          "interpretation": "載人航太"
+        },
+        {
+          "id": 16,
+          "name": "紅色雪山或冰山",
+          "count": 1,
+          "color": "紅、白頂",
+          "detail": "山峰覆雪，底部是冰層",
+          "interpretation": "格陵蘭或北極"
+        },
+        {
+          "id": 17,
+          "name": "浮冰",
+          "count": 3,
+          "color": "紅白",
+          "detail": "冰山下方漂浮的冰塊",
+          "interpretation": "冰川融化"
+        },
+        {
+          "id": 18,
+          "name": "升空火箭",
+          "count": 1,
+          "color": "紅黑、白邊",
+          "detail": "火箭向上飛，尾部有黑色尖形噴焰",
+          "interpretation": "登月或火星任務（如 Artemis、SpaceX）"
+        },
+        {
+          "id": 19,
+          "name": "紅色發射煙雲",
+          "count": 1,
+          "color": "紅",
+          "detail": "在火箭下方左右兩側噴出",
+          "interpretation": ""
+        },
+        {
+          "id": 20,
+          "name": "高舉手臂的西裝男子",
+          "count": 1,
+          "color": "黑西裝、白襯衫",
+          "detail": "站在火箭煙雲前，舉手揮動或指向天空",
+          "interpretation": "疑似太空事業大亨或宣布發射的政治人物"
+        }
+      ]
+    },
+    {
+      "region": "C. 上中：金融與司法/政府",
+      "items": [
+        {
+          "id": 21,
+          "name": "希臘神殿式柱廊建築",
+          "count": 1,
+          "color": "黑白",
+          "detail": "三角山牆、6 根柱子、台階",
+          "interpretation": "美國最高法院、聯準會或證交所"
+        },
+        {
+          "id": 22,
+          "name": "提公事包的西裝男子",
+          "count": 4,
+          "color": "黑",
+          "detail": "從建築門口沿台階往下走",
+          "interpretation": "官員離職、被撤換或出庭，也可能是銀行家"
+        },
+        {
+          "id": 23,
+          "name": "股市格線圖加下跌箭頭",
+          "count": 1,
+          "color": "黑格、紅箭頭",
+          "detail": "鋸齒狀紅箭頭先漲後跌，從格線右下角穿出，尖端在格線下緣之外（2026-11-19 放大核對）",
+          "interpretation": "股災、AI 泡沫破裂或經濟衰退"
+        },
+        {
+          "id": 24,
+          "name": "一疊鈔票",
+          "count": 1,
+          "color": "紅黑",
+          "detail": "約 5 張堆疊，最上面一張有圓形圖案",
+          "interpretation": "美元、通膨或財政"
+        },
+        {
+          "id": 25,
+          "name": "客機",
+          "count": 1,
+          "color": "紅、黑窗",
+          "detail": "四發噴射客機往右飛",
+          "interpretation": "航空、旅遊，或空軍一號"
+        }
+      ]
+    },
+    {
+      "region": "D. 右上：中東、川普事業、海上",
+      "items": [
+        {
+          "id": 26,
+          "name": "紅色夜空",
+          "count": 1,
+          "color": "紅",
+          "detail": "沙漠上方的紅色雲狀天空",
+          "interpretation": "中東局勢緊張（呼應 T3）"
+        },
+        {
+          "id": 27,
+          "name": "新月",
+          "count": 1,
+          "color": "白",
+          "detail": "",
+          "interpretation": "伊斯蘭世界"
+        },
+        {
+          "id": 28,
+          "name": "小星星",
+          "count": 5,
+          "color": "白",
+          "detail": "在紅色夜空中；數量於 2026-11-18 放大核對",
+          "interpretation": ""
+        },
+        {
+          "id": 29,
+          "name": "棕櫚樹",
+          "count": 2,
+          "color": "黑",
+          "detail": "",
+          "interpretation": "海灣地區"
+        },
+        {
+          "id": 30,
+          "name": "遠方城市天際線",
+          "count": 1,
+          "color": "黑",
+          "detail": "棕櫚樹後方的細長高樓",
+          "interpretation": "杜拜、利雅德等海灣城市"
+        },
+        {
+          "id": 31,
+          "name": "騎駱駝的白袍人",
+          "count": 1,
+          "color": "黑駱駝、白袍、白頭巾",
+          "detail": "",
+          "interpretation": "沙烏地或海灣阿拉伯國家"
+        },
+        {
+          "id": 32,
+          "name": "黑色岬角或懸崖",
+          "count": 1,
+          "color": "黑",
+          "detail": "駱駝所站的平台，尾端尖出",
+          "interpretation": ""
+        },
+        {
+          "id": 33,
+          "name": "TRUMP 大樓",
+          "count": 1,
+          "color": "黑、紅直條紋",
+          "detail": "樓頂寫著「TRUMP」，旁邊有矮樓",
+          "interpretation": "川普家族生意（海外川普大樓或地產）"
+        },
+        {
+          "id": 34,
+          "name": "被雲橫切的紅色太陽",
+          "count": 1,
+          "color": "紅",
+          "detail": "前方有 3 條白色雲線",
+          "interpretation": "夕陽（沒落）或日本意象"
+        },
+        {
+          "id": 35,
+          "name": "大型船艦或超級遊艇",
+          "count": 1,
+          "color": "黑、紅線",
+          "detail": "有雷達或天線桅杆，航行在黑色波浪上",
+          "interpretation": "寡頭遊艇、軍艦或總統座艦"
+        },
+        {
+          "id": 36,
+          "name": "黑色波浪水面",
+          "count": 1,
+          "color": "黑白",
+          "detail": "從船下一路延伸到克里姆林宮右側",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "E. 右上中：時間、牛仔、俄羅斯",
+      "items": [
+        {
+          "id": 37,
+          "name": "沙漏",
+          "count": 1,
+          "color": "黑框、紅底、黑沙",
+          "detail": "上半球除了頂端一小段白色空隙以外全黑，下半球整個是黑的（2026-11-18 放大核對）",
+          "interpretation": "時間快到了（任期、停火或最後期限）"
+        },
+        {
+          "id": 38,
+          "name": "小黑鳥",
+          "count": 1,
+          "color": "黑",
+          "detail": "在沙漏右上方",
+          "interpretation": ""
+        },
+        {
+          "id": 39,
+          "name": "騎馬的牛仔",
+          "count": 1,
+          "color": "紅色人物、黑馬",
+          "detail": "戴牛仔帽",
+          "interpretation": "美國（或川普）的牛仔外交，也可能是美國西部"
+        },
+        {
+          "id": 40,
+          "name": "克里姆林宮救世主塔",
+          "count": 1,
+          "color": "紅",
+          "detail": "頂端有紅星，鐘面指針接近 12 點，連著紅色城垛城牆",
+          "interpretation": "俄羅斯；接近 12 點暗示關鍵時刻"
+        },
+        {
+          "id": 41,
+          "name": "紅星",
+          "count": 1,
+          "color": "紅",
+          "detail": "在塔頂",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "F. 左中：中國監控、科技寡頭",
+      "items": [
+        {
+          "id": 42,
+          "name": "中國國旗看板或螢幕",
+          "count": 1,
+          "color": "紅、黃星（畫成白星）",
+          "detail": "方形框，四角有固定點",
+          "interpretation": "中國"
+        },
+        {
+          "id": 43,
+          "name": "監視攝影機",
+          "count": 1,
+          "color": "紅機身、黑桿",
+          "detail": "裝在高桿上，對著群眾",
+          "interpretation": "數位監控"
+        },
+        {
+          "id": 44,
+          "name": "大批群眾剪影",
+          "count": "約 40",
+          "color": "黑底白線",
+          "detail": "擠在國旗看板下方",
+          "interpretation": "中國人民、閱兵觀眾或被監控的人"
+        },
+        {
+          "id": 45,
+          "name": "四名男子",
+          "count": 4,
+          "color": "黑衣、紅線條",
+          "detail": "並排站立，其中一人戴眼鏡",
+          "interpretation": "科技寡頭（AI 公司 CEO）"
+        },
+        {
+          "id": 46,
+          "name": "AI 晶片",
+          "count": 3,
+          "color": "紅",
+          "detail": "兩枚在機器人左上方，一枚在四人右側（2026-11-18 用顏色掃描核對，先前記 4 枚）",
+          "interpretation": "半導體、GPU 或晶片戰"
+        },
+        {
+          "id": 47,
+          "name": "二進位數字 0、1（數據流）",
+          "count": "約 55–65 個（影像解析度有限，數量是估計）",
+          "color": "紅",
+          "detail": "散落成一條數據流，分 4 段：(1) 機器人周圍最密，約 25 個，往左下灑到森林大火和印度門左側；(2) 保險箱下方到膠囊之間，約 12 個；(3) Cybertruck 下方、針筒兩側，約 10 個；(4) AI 大腦右側到巴黎建築邊緣，垂直一列約 8 個。字元排列分散不成行，看不出可解讀的二進位訊息（ASCII 等）",
+          "interpretation": "數據或 AI；這條數據流把機器人、保險箱、藥物、針筒、AI 大腦和印度門串在一起，暗示 AI 與金融、醫藥、印度（科技外包或 AI 人才）彼此相關"
+        }
+      ]
+    },
+    {
+      "region": "G. 中央：AI、生技、消費、市場",
+      "items": [
+        {
+          "id": 48,
+          "name": "Cybertruck 加充電樁",
+          "count": 1,
+          "color": "紅車、黑充電樁上有白色閃電",
+          "detail": "正在充電",
+          "interpretation": "特斯拉、馬斯克或電動車"
+        },
+        {
+          "id": 49,
+          "name": "希臘字母「π ε ν」",
+          "count": 1,
+          "color": "黑",
+          "detail": "黑色粗體字母，傾斜擺放",
+          "interpretation": "X 上最有說服力的解讀：希臘字母拼成「pen」，呼應封面標題 T5「What is mightier than Le Pen?」（典故「筆比劍更有力」）。其他說法：希伯來文 5787 年（תשפ״ז）、π Σ √ 數學符號（Grok）、π＝3/14"
+        },
+        {
+          "id": 50,
+          "name": "賭場籌碼堆",
+          "count": 3,
+          "color": "紅黑",
+          "detail": "排成三角形",
+          "interpretation": "投機、加密貨幣、預測市場或博弈"
+        },
+        {
+          "id": 51,
+          "name": "背著大麻袋奔跑的人形機器人",
+          "count": 1,
+          "color": "黑白關節",
+          "detail": "像小偷一樣扛著黑色大袋子，從 #52 打開的保險箱旁邊跑出來，身後灑著 0、1",
+          "interpretation": "AI 搶走工作或財富，也可能是 AI 盜竊、詐騙"
+        },
+        {
+          "id": 52,
+          "name": "被打開的保險箱（內有二進位數字）",
+          "count": 1,
+          "color": "黑箱、紅色厚門、紅框、灰白色數字",
+          "detail": "門完全往左打開，門上有轉盤密碼鎖和把手；箱內是靠右對齊的 3 排數字：第 1 排「0」、第 2 排「000」、第 3 排「01000」（14 倍放大確認，之前誤判為硬幣）；緊鄰左側的偷錢機器人 #51",
+          "interpretation": "與 #51 是同一場景。X 上的兩種讀法：(1) 連讀成 000001000＝十進位 8；(2) 取 8 位 00001000＝ASCII 的 BACKSPACE（刪除鍵），被延伸解讀為「銀行重置／存款被刪除」。官方對應的是十大趨勢之 4：AI 債務泡沫、AI 驅動的網路攻擊"
+        },
+        {
+          "id": 53,
+          "name": "電路板 AI 大腦",
+          "count": 1,
+          "color": "黑、紅色線路",
+          "detail": "",
+          "interpretation": "AI 或 AGI（呼應 T2）"
+        },
+        {
+          "id": 54,
+          "name": "注射針筒",
+          "count": 1,
+          "color": "紅",
+          "detail": "垂直立著",
+          "interpretation": "減重針（GLP-1）或疫苗"
+        },
+        {
+          "id": 55,
+          "name": "膠囊和藥錠",
+          "count": "膠囊 2、藥錠 2",
+          "color": "紅黑",
+          "detail": "傾倒灑出，帶著紅色小顆粒",
+          "interpretation": "製藥、口服減重藥或藥價"
+        },
+        {
+          "id": 56,
+          "name": "新德里印度門",
+          "count": 1,
+          "color": "黑、紅橫線",
+          "detail": "",
+          "interpretation": "印度"
+        },
+        {
+          "id": 57,
+          "name": "科學家剪影",
+          "count": 1,
+          "color": "黑",
+          "detail": "手拿一顆紅色球體端詳",
+          "interpretation": "生技研究，或研究病毒、細胞"
+        },
+        {
+          "id": 58,
+          "name": "紅色球體",
+          "count": 1,
+          "color": "紅",
+          "detail": "在科學家手上",
+          "interpretation": "病毒、細胞或蘋果"
+        },
+        {
+          "id": 59,
+          "name": "顯微鏡",
+          "count": 1,
+          "color": "黑",
+          "detail": "在左邊的實驗桌上",
+          "interpretation": ""
+        },
+        {
+          "id": 60,
+          "name": "實驗桌和櫃子",
+          "count": 2,
+          "color": "黑白",
+          "detail": "",
+          "interpretation": ""
+        },
+        {
+          "id": 61,
+          "name": "紅色試劑瓶和燒瓶",
+          "count": 7,
+          "color": "紅",
+          "detail": "在桌上和架子上；數量於 2026-11-18 放大核對",
+          "interpretation": ""
+        },
+        {
+          "id": 62,
+          "name": "直立試管架或小櫃",
+          "count": 1,
+          "color": "黑、內有紅燒瓶",
+          "detail": "上方有一個黑瓶和一個紅瓶",
+          "interpretation": ""
+        },
+        {
+          "id": 63,
+          "name": "紅色小盤或培養皿",
+          "count": 1,
+          "color": "紅",
+          "detail": "在桌上",
+          "interpretation": ""
+        },
+        {
+          "id": 64,
+          "name": "口紅",
+          "count": 1,
+          "color": "紅黑",
+          "detail": "",
+          "interpretation": "美妝或消費品（口紅效應：經濟衰退指標）"
+        },
+        {
+          "id": 65,
+          "name": "黑色圓柱罐",
+          "count": 1,
+          "color": "黑",
+          "detail": "",
+          "interpretation": "化妝品或保養品"
+        },
+        {
+          "id": 66,
+          "name": "小展示櫃",
+          "count": 1,
+          "color": "黑框、紅瓶",
+          "detail": "",
+          "interpretation": "美妝或零售"
+        }
+      ]
+    },
+    {
+      "region": "H. 右中：法國與歐洲",
+      "items": [
+        {
+          "id": 67,
+          "name": "瑪麗安娜雕像（巴黎共和廣場）",
+          "count": 1,
+          "color": "黑",
+          "detail": "高舉橄欖枝",
+          "interpretation": "法國（呼應 T5 勒朋）"
+        },
+        {
+          "id": 68,
+          "name": "攀上雕像的人",
+          "count": "約 2",
+          "color": "黑",
+          "detail": "在雕像底座上攀爬或揮手",
+          "interpretation": ""
+        },
+        {
+          "id": 69,
+          "name": "奧斯曼式巴黎建築",
+          "count": 2,
+          "color": "黑白",
+          "detail": "在雕像左右兩側",
+          "interpretation": "巴黎"
+        },
+        {
+          "id": 70,
+          "name": "抗議群眾",
+          "count": "約 40",
+          "color": "黑底白線",
+          "detail": "擠滿廣場，有人舉手",
+          "interpretation": "示威或選舉造勢"
+        },
+        {
+          "id": 71,
+          "name": "裂開歐元標語牌",
+          "count": 1,
+          "color": "白牌、紅圓、€ 中間裂開",
+          "detail": "由群眾舉著",
+          "interpretation": "反歐元、歐盟分裂或財政危機"
+        },
+        {
+          "id": 72,
+          "name": "斷裂的管線",
+          "count": 1,
+          "color": "紅黑",
+          "detail": "從法蘭接頭處斷開，滴下 2 滴黑色液體",
+          "interpretation": "油氣管線破壞（類似北溪管線）或能源斷供"
+        },
+        {
+          "id": 73,
+          "name": "軍靴",
+          "count": 1,
+          "color": "黑、紅鞋底紋",
+          "detail": "靴筒在左上、靴尖在下，鞋底紋朝右下方（朝著投票箱那一側），沒有碰到票箱（2026-11-18 放大核對）",
+          "interpretation": "軍事鎮壓、威權或入侵"
+        },
+        {
+          "id": 74,
+          "name": "投票的手加投票箱",
+          "count": 1,
+          "color": "紅手、黑袖、黑箱",
+          "detail": "選票上畫著 X，旁邊有紅色動感線",
+          "interpretation": "重大選舉（法國總統大選等）"
+        },
+        {
+          "id": 75,
+          "name": "松樹",
+          "count": 2,
+          "color": "黑",
+          "detail": "在投票箱右側",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "I. 左下：戰火與災害",
+      "items": [
+        {
+          "id": 76,
+          "name": "森林大火",
+          "count": 1,
+          "color": "紅焰",
+          "detail": "大片火焰燒在黑色森林後方",
+          "interpretation": "野火（呼應 T4）"
+        },
+        {
+          "id": 77,
+          "name": "雄鹿",
+          "count": 1,
+          "color": "黑",
+          "detail": "站在火場前的山丘上",
+          "interpretation": "生態受害"
+        },
+        {
+          "id": 78,
+          "name": "飛彈",
+          "count": 9,
+          "color": "紅白",
+          "detail": "4 枚看得到彈體，另有 5 道紅色細長拖痕，成群往右下飛（2026-11-18 放大核對，先前記 6）",
+          "interpretation": "飛彈攻擊（伊朗、以色列、俄烏）"
+        },
+        {
+          "id": 79,
+          "name": "城市廢墟（白線）",
+          "count": 1,
+          "color": "白線、黑底",
+          "detail": "殘破建築",
+          "interpretation": "加薩、烏克蘭等戰後廢墟"
+        },
+        {
+          "id": 80,
+          "name": "大爆炸",
+          "count": 1,
+          "color": "紅白",
+          "detail": "鋸齒狀爆炸光芒",
+          "interpretation": "空襲"
+        },
+        {
+          "id": 81,
+          "name": "被炸的城市剪影",
+          "count": 1,
+          "color": "黑",
+          "detail": "在爆炸前方",
+          "interpretation": ""
+        },
+        {
+          "id": 82,
+          "name": "四軸無人機",
+          "count": 3,
+          "color": "紅",
+          "detail": "在實驗室下方的黑色地帶飛行",
+          "interpretation": "無人機戰爭"
+        },
+        {
+          "id": 83,
+          "name": "對戰中的戰車",
+          "count": 2,
+          "color": "黑、紅輪",
+          "detail": "兩輛對射，中間有紅色爆炸",
+          "interpretation": "地面戰（俄烏或新戰場）"
+        },
+        {
+          "id": 84,
+          "name": "砲擊爆炸點",
+          "count": 1,
+          "color": "紅",
+          "detail": "在兩輛戰車之間",
+          "interpretation": ""
+        },
+        {
+          "id": 85,
+          "name": "白色雲朵或煙",
+          "count": "約 3",
+          "color": "白",
+          "detail": "戰車附近",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "J. 右下：工業、能源、海運",
+      "items": [
+        {
+          "id": 86,
+          "name": "工廠和煙囪",
+          "count": "約 12 支煙囪",
+          "color": "黑",
+          "detail": "冒著大量黑煙；數量於 2026-11-18 放大核對",
+          "interpretation": "工業污染或製造業回流"
+        },
+        {
+          "id": 87,
+          "name": "黑色煙霧",
+          "count": "約 6 道",
+          "color": "黑",
+          "detail": "從煙囪飄向右方戰鬥機群",
+          "interpretation": ""
+        },
+        {
+          "id": 88,
+          "name": "被鐵鏈纏住的油輪",
+          "count": 1,
+          "color": "黑船身、紅艙、白鐵鏈 3 條",
+          "detail": "",
+          "interpretation": "制裁、扣押影子艦隊或海峽封鎖"
+        },
+        {
+          "id": 89,
+          "name": "紅色海面",
+          "count": 1,
+          "color": "紅黑",
+          "detail": "油輪下方大片紅色波浪",
+          "interpretation": "紅海、荷莫茲海峽、漏油或流血"
+        },
+        {
+          "id": 90,
+          "name": "戰鬥機",
+          "count": 4,
+          "color": "紅",
+          "detail": "3 架小、1 架大，往右飛（2026-11-18 放大核對，先前記 5）",
+          "interpretation": "空戰或空襲（伊朗相關，呼應 T3）"
+        },
+        {
+          "id": 91,
+          "name": "風力發電機",
+          "count": 2,
+          "color": "黑",
+          "detail": "在一座小黑島上",
+          "interpretation": "再生能源"
+        },
+        {
+          "id": 92,
+          "name": "燃燒的油桶",
+          "count": 1,
+          "color": "黑桶、紅焰",
+          "detail": "",
+          "interpretation": "油價飆升或石油危機"
+        },
+        {
+          "id": 93,
+          "name": "溫度計",
+          "count": 1,
+          "color": "紅",
+          "detail": "數值爆表，頂端有紅色放射線",
+          "interpretation": "史上最熱年（呼應 T4）"
+        }
+      ]
+    },
+    {
+      "region": "K. 下中：日本、預測、排隊人群",
+      "items": [
+        {
+          "id": 94,
+          "name": "日圓符號 ¥",
+          "count": 1,
+          "color": "白",
+          "detail": "",
+          "interpretation": "日圓（或人民幣）匯率"
+        },
+        {
+          "id": 95,
+          "name": "日式五重塔",
+          "count": 1,
+          "color": "紅",
+          "detail": "",
+          "interpretation": "日本"
+        },
+        {
+          "id": 96,
+          "name": "富士山",
+          "count": 1,
+          "color": "白線",
+          "detail": "",
+          "interpretation": "日本"
+        },
+        {
+          "id": 97,
+          "name": "用望遠鏡觀星的人",
+          "count": 1,
+          "color": "白色剪影",
+          "detail": "望遠鏡架在三腳架上",
+          "interpretation": "展望未來，或天文、太空"
+        },
+        {
+          "id": 98,
+          "name": "夜空星星",
+          "count": "約 5",
+          "color": "白",
+          "detail": "在日本區塊的黑色夜空",
+          "interpretation": ""
+        },
+        {
+          "id": 99,
+          "name": "發光水晶球",
+          "count": 1,
+          "color": "黑球、紅光芒、紅底座",
+          "detail": "球內有星芒",
+          "interpretation": "預測或預言（也可能是預測市場）"
+        },
+        {
+          "id": 100,
+          "name": "排隊人群",
+          "count": 10,
+          "color": "黑",
+          "detail": "一排人頭從左到右，由矮到高；數量於 2026-11-18 放大核對",
+          "interpretation": "移民、失業、選民或領救濟"
+        },
+        {
+          "id": 101,
+          "name": "拿旗的人",
+          "count": 1,
+          "color": "黑",
+          "detail": "站在隊伍最右邊",
+          "interpretation": ""
+        },
+        {
+          "id": 102,
+          "name": "紅底黑色獸形圖案旗",
+          "count": 1,
+          "color": "紅、黑",
+          "detail": "",
+          "interpretation": "疑似阿爾巴尼亞雙頭鷹旗，或威爾斯紅龍旗（未確認）"
+        },
+        {
+          "id": 103,
+          "name": "黑色草叢和小丘",
+          "count": 1,
+          "color": "黑",
+          "detail": "在紅色海面下方",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "L. 左下底部：農業、娛樂",
+      "items": [
+        {
+          "id": 104,
+          "name": "戴帽男子",
+          "count": 1,
+          "color": "黑",
+          "detail": "雙手插腰站著",
+          "interpretation": "農民或牧場主（關稅、農業）"
+        },
+        {
+          "id": 105,
+          "name": "牛",
+          "count": 2,
+          "color": "黑",
+          "detail": "",
+          "interpretation": "畜牧、牛肉價格或貿易"
+        },
+        {
+          "id": 106,
+          "name": "老式電影攝影機或放映機",
+          "count": 1,
+          "color": "黑機身、2 個紅片盤",
+          "detail": "掛著紅色蜘蛛網",
+          "interpretation": "好萊塢沒落、系列電影疲乏（呼應 T6）"
+        },
+        {
+          "id": 107,
+          "name": "蜘蛛網",
+          "count": 1,
+          "color": "紅",
+          "detail": "在攝影機上",
+          "interpretation": "久未使用"
+        }
+      ]
+    },
+    {
+      "region": "M. 最底部：難民與人道危機",
+      "items": [
+        {
+          "id": 108,
+          "name": "帳篷",
+          "count": 3,
+          "color": "紅外框、黑入口",
+          "detail": "2026-11-18 放大核對，先前記 4",
+          "interpretation": "難民營"
+        },
+        {
+          "id": 109,
+          "name": "蹲著的母親",
+          "count": 1,
+          "color": "黑",
+          "detail": "綁馬尾，雙手舉起一個嬰兒",
+          "interpretation": ""
+        },
+        {
+          "id": 110,
+          "name": "孩童",
+          "count": 2,
+          "color": "黑",
+          "detail": "一個被舉著，一個坐在母親腳邊",
+          "interpretation": ""
+        },
+        {
+          "id": 111,
+          "name": "抱頭坐地的人",
+          "count": 1,
+          "color": "黑",
+          "detail": "雙手抱頭、屈膝坐著",
+          "interpretation": "絕望"
+        },
+        {
+          "id": 112,
+          "name": "布袋或包袱",
+          "count": 2,
+          "color": "黑、紅繩結",
+          "detail": "",
+          "interpretation": "逃難行李或救援物資"
+        },
+        {
+          "id": 113,
+          "name": "瓶子",
+          "count": 1,
+          "color": "黑",
+          "detail": "倒在地上",
+          "interpretation": ""
+        },
+        {
+          "id": 114,
+          "name": "碎石或碎片",
+          "count": 3,
+          "color": "黑",
+          "detail": "散在地上；數量於 2026-11-18 放大核對",
+          "interpretation": ""
+        }
+      ]
+    },
+    {
+      "region": "N. 全圖背景與裝飾",
+      "items": [
+        {
+          "id": 115,
+          "name": "松樹或杉樹",
+          "count": "約 30",
+          "color": "黑",
+          "detail": "分布在全圖各區",
+          "interpretation": ""
+        },
+        {
+          "id": 116,
+          "name": "草叢或灌木",
+          "count": "約 25",
+          "color": "黑",
+          "detail": "主要在底部",
+          "interpretation": ""
+        },
+        {
+          "id": 117,
+          "name": "整體圓形構圖",
+          "count": 1,
+          "color": "只用紅、黑、白三色",
+          "detail": "所有元素組成一個地球或圓形；上半是權力和太空，下半是戰爭和難民",
+          "interpretation": "上層權力、下層苦難的階級結構"
+        }
+      ]
+    }
+  ],
+  "changes_from_first_scan": [
+    "無人機：5 架改為 3 架",
+    "火箭：原記 2 枚，改為 1 枚火箭加黑色噴焰",
+    "頂部黑色物：從「柏樹」補註為「可能是捲起的黑旗」，數量改為 7",
+    "排隊人群：約 11 人改為約 12 人",
+    "黑色飛行物：原以為是鳥或無人機，判定為黑煙",
+    "新增：克里姆林宮鐘面指針接近 12 點、管線滴出 2 滴黑液、保險箱門半開、遠方海灣城市天際線、浮冰 3 塊、紅色培養皿、碎片、母親舉起嬰兒、四人中一人戴眼鏡、各區星星與樹叢數量、整體構圖",
+    "#52 經 6 倍放大重新判讀：保險箱門是完全打開，箱內是硬幣（不是數字鍵），並且與 #51 偷錢機器人是同一場景",
+    "#47 二進位數字補充：約 55–65 個，分 4 段分布，排列分散，沒有可解讀的訊息",
+    "#52 箱內圓形物補註：可能是硬幣，也可能是二進位的 0",
+    "#52 經 14 倍放大再更正：箱內不是硬幣，而是二進位數字 0 / 000 / 01000",
+    "#49 補上 X 網友的解讀：π ε ν＝pen，對應 Le Pen"
+  ],
+  "uncertain": [
+    "#102 旗幟是阿爾巴尼亞還是威爾斯",
+    "#1、#2、#4、#5、#6 頂部人物的身分",
+    "#8 頂部黑色尖形物是柏樹還是捲起的旗"
+  ]
+}
